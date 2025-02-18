@@ -352,7 +352,7 @@ First, create a script outside of the Jenkins container, since containers typica
 Since the script was created outside the container, copy it inside using `docker cp`:
 
 ```sh
-   docker cp script.sh jenkins:/tmp/script.sh
+docker cp script.sh jenkins:/tmp/script.sh
 ```
 Output:
 ```sh
