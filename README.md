@@ -14,6 +14,7 @@
   - [3. Redirect your first Job's output](#3-redirect-your-first-jobs-output)
   - [4. Learn how to execute a bash script from Jenkins](#4-learn-how-to-execute-a-bash-script-from-jenkins)
   - [5. Add parameters to your Job](#5-add-parameters-to-your-job)
+  - [6.Learn How to Create a Jenkins List Parameter with Your Script](#6learn-how-to-create-a-jenkins-list-parameter-with-your-script)
 
 
 ## Section 1: Resources for this course
@@ -494,6 +495,65 @@ Modify the job to use Jenkins environment variables:
 - **Dynamic Inputs**: Modify values without changing the job configuration.
 - **Reusability**: Use **the same job** for `different scenarios`.
 - **Environment Flexibility**: Pass variables like `dev`, `staging`, or `production` dynamically.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 6.Learn How to Create a Jenkins List Parameter with Your Script
+
+**1. Open Job Configuration**
+
+1. Navigate to your Jenkins instance.
+2. Select the job you want to configure.
+3. Click on **Configure**.
+
+**2. Enable Parameterization**
+
+1. In the **General** section, check the box **This project is parameterized**.
+2. Click on **Add Parameter**.
+3. Select **Choice Parameter**.
+
+**3. Define the List Parameter**
+
+1. In the **Name** field, enter a variable name (e.g., `LASTNAME`).
+2. In the **Choices** field, define the possible values, one per line:
+   ```
+   Smith
+   Johnson
+   Doe
+   ```
+![List Parameter](images/list_parameter_0.png)
+
+3. Click **Save**.
+
+**4. Modify the Build Script to Use the Parameter**
+
+In the **Build Steps** section:
+
+1. Click **Add build step** → **Execute shell**.
+2. Enter the following script:
+   ```sh
+   echo "Hello, $FIRST_NAME $SECOND_NAME $LASTNAME"
+   ```
+3. Click **Save**.
+
+**5. Trigger a Build with Parameters**
+1. Click on **Build with Parameters**.
+2. Enter values for `FIRST_NAME` and `SECOND_NAME`.
+3. Select a value from the `LASTNAME` dropdown list.
+4. Click **`Build`**.
+![Build Parameters](images/list_parameter.png)
+
+**6. Verify the Output**
+1. Click on the completed build.
+2. Go to **Console Output**.
+3. You should see an output similar to:
+   ```sh
+   Hello, Simon Ovidio Smith
+   ```
 
 <div align="right">
   <strong>
