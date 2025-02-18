@@ -10,6 +10,8 @@
   - [6. Access Jenkins](#6-access-jenkins)
 - [Section 3: Getting Started with Jenkins](#section-3-getting-started-with-jenkins)
   - [1. Create Your First Jenkins Job](#1-create-your-first-jenkins-job)
+  - [2. Keep Playing with Your First Jenkins Job](#2-keep-playing-with-your-first-jenkins-job)
+  - [3. Redirect your first Job's output](#3-redirect-your-first-jobs-output)
 
 
 ## Section 1: Resources for this course
@@ -230,6 +232,83 @@ To create your first Jenkins job, follow these steps:
 
 4. **Run the Job:**
    - After saving the job, you can run it by clicking **Build Now** on the job's page.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Keep Playing with Your First Jenkins Job
+
+**Steps to Modify Your Jenkins Job**
+
+**1. Open Your Existing Job**
+
+1. Navigate to the **Jenkins Dashboard**.
+2. Find and click on the job you created earlier, e.g., `my-first-job`.
+
+**2. Modify the Build Step**
+
+1. On the job configuration page, click on **Build Steps** section where you previously added the shell script.
+2. Replace the current command with the following script:
+
+   ```bash
+   echo "Current date and time is $(date)"
+   ```
+3. Click on **`Save`**
+4. Click on **`Build Now`***
+
+**Console Output**
+
+```
+Started by user Jenkins Admin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/my-first-job
+[my-first-job] $ /bin/sh -xe /tmp/jenkins14591664813078710572.sh
++ date
++ echo Current date and time is Tue Feb 18 19:48:12 UTC 2025
+Current date and time is Tue Feb 18 19:48:12 UTC 2025
+Finished: SUCCESS
+```
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 3. Redirect your first Job's output
+Replace the current command with the following script:
+
+```bash
+NAME=Ovidio
+echo "Hello, $NAME. Current date and time is $(date)" > /tmp/info
+```
+**Output**
+```bash
+Started by user Jenkins Admin
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/my-first-job
+[my-first-job] $ /bin/sh -xe /tmp/jenkins9811356184091446742.sh
++ NAME=Ovidio
++ date
++ echo Hello, Ovidio. Current date and time is Tue Feb 18 19:56:12 UTC 2025
+Finished: SUCCESS
+```
+
+After running it you can use the following commands:
+
+```bash
+docker exec -ti jenkins bash
+```
+
+```bash
+cat /tmp/info
+```
+**Output**
+```bash
+Hello, Ovidio. Current date and time is Tue Feb 18 19:56:12 UTC 2025
+```
 
 <div align="right">
   <strong>
