@@ -464,6 +464,8 @@ Modify the job to use Jenkins environment variables:
    - Name: `SECOND_NAME`
    - Default Value: `Ovidio`
 
+![Define the Parameters](/images/add_parameters_to_your_job.png)
+
 **4. Modify the Job to Use Parameters**
 1. In the **Build** section, select **Execute shell**.
 2. Replace any hardcoded names with the parameters:
@@ -474,7 +476,10 @@ Modify the job to use Jenkins environment variables:
 
 **5. Execute the Job with Parameters**
 1. Click **`Build with Parameters`**.
-2. Enter new values (or use default values).
+2. Enter **`new values`** (or use default values).
+
+![Define the Parameters](/images/add_parameters_to_your_job_2.png)
+
 3. Click **Build**.
 
 **6. Check the Output**
