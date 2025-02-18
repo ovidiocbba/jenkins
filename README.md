@@ -320,6 +320,7 @@ Hello, Ovidio. Current date and time is Tue Feb 18 19:56:12 UTC 2025
 ### 4. Learn how to execute a bash script from Jenkins
 
 **1. Create a Shell Script**
+
 First, create a script outside of the Jenkins container, since containers typically have only essential packages.
 
 1. Create a new script file named `script.sh`.
@@ -347,6 +348,7 @@ First, create a script outside of the Jenkins container, since containers typica
    **+x** → Adds execution permissions (**allows the file to be run as a program**).
 
 **2. Copy the Script to the Jenkins Container**
+
 Since the script was created outside the container, copy it inside using `docker cp`:
 
 ```sh
@@ -358,6 +360,7 @@ Successfully copied 2.05kB to jenkins:/tmp/script.sh
 ```
 
 **3. Verify the Script in the Container**
+
 1. Access the Jenkins container:
 
    ```sh
@@ -383,6 +386,7 @@ Hello, John Doe
 ```
 
 **4. Configure a Jenkins Job to Run the Script**
+
 1. Open **Jenkins Dashboard**.
 2. Create a new **Freestyle Project**.
 3. Go to **Build Steps** → **Add build step** → **Execute shell**.
@@ -395,6 +399,7 @@ Hello, John Doe
 5. Save the job.
 
 **5. Run and Verify the Job**
+
 1. Click **Build Now**.
 2. Check the console output:
 
@@ -403,6 +408,7 @@ Hello, John Doe
    ```
 
 **6. Using Variables Instead of Hardcoded Values**
+
 Modify the job to use Jenkins environment variables:
 
 1. Edit the job's **Execute shell** command:
@@ -416,6 +422,7 @@ Modify the job to use Jenkins environment variables:
 2. Save and re-run the job.
 
 **7. Debugging Errors**
+
 - If the job fails, check the **Console Output**.
 - Failed jobs appear in **red**, while successful ones are **blue**.
 - Common issues:
