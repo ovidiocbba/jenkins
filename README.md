@@ -15,6 +15,7 @@
   - [4. Learn how to execute a bash script from Jenkins](#4-learn-how-to-execute-a-bash-script-from-jenkins)
   - [5. Add parameters to your Job](#5-add-parameters-to-your-job)
   - [6.Learn How to Create a Jenkins List Parameter with Your Script](#6learn-how-to-create-a-jenkins-list-parameter-with-your-script)
+  - [7. Add basic logic and boolean parameters](#7-add-basic-logic-and-boolean-parameters)
 
 
 ## Section 1: Resources for this course
@@ -554,6 +555,105 @@ In the **Build Steps** section:
    ```sh
    Hello, Simon Ovidio Smith
    ```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 7. Add basic logic and boolean parameters
+
+**1. Modify the Script to Include a Boolean Parameter**
+
+First, we add a script to include a new parameter called `SHOW`, which is a boolean value (true/false). This parameter determines whether the script prints the user's name and last name.
+
+1. Edit your script to include a new boolean parameter `SHOW`.
+2. Implement a conditional statement:
+   - If `SHOW` is true, print the user's first and last name.
+   - Otherwise, display an error message.
+
+```bash
+#!/bin/bash
+NAME = $1
+LASTNAME = $2
+SHOW = $3
+if [ "$SHOW" = "true" ]; then
+    echo "Hello, $NAME $LASTNAME"
+else
+    echo "If you want to see the name, please mark the show option."
+fi
+```
+**2. Copy the Script to the Jenkins Container**
+Since we made modifications to our script, we need to copy it back to the Jenkins container:
+
+```bash
+docker cp script2.sh jenkins:/tmp/script2.sh
+```
+
+Then, enter the container and verify the script:
+
+```bash
+docker exec -it jenkins bash
+```
+
+```bash
+cat /tmp/script2.sh
+```
+**Test 1**
+```bash
+/tmp/script2.sh Ovidio Miranda false
+```
+**Output**
+```bash
+If you want to see the name, please mark the show option.
+```
+**Test 2**
+```bash
+/tmp/script2.sh Ovidio Miranda true
+```
+**Output**
+```bash
+Hello, Ovidio Miranda 
+```
+
+**3. Configure the Jenkins Job**
+
+1. Navigate to the Jenkins job configuration page.
+2. Click on `This project is parameterized`.
+3. Add a new boolean parameter:
+   - **Name**: `SHOW`
+   - **Default Value**: `true` (checked) or `false` (unchecked)
+
+![Boolean Parameters](images/boolean_parameters_1.png)
+
+In the **Build Steps** section:
+
+4. Enter the following script:
+   ```sh
+   /tmp/script2.sh $FIRST_NAME $LASTNAME $SHOW
+   ```
+5. Click **Save**.
+
+
+**4. Execute the Jenkins Job**
+
+1. Click on `Build with Parameters`.
+2. Enter values for:
+   - **First Name** (string parameter)
+   - **Last Name** (choice parameter from a list)
+   - **SHOW** (boolean parameter: checked = true, unchecked = false)
+
+![Boolean Parameters](images/boolean_parameters_2.png)
+
+3. Click `Build`.
+4. Check the console output to see if the correct logic was applied:
+   - If `SHOW` is `true`, it should print `Hello, First Name Last Name`.
+   - If `SHOW` is `false`, it should display an error message.
+
+**5. Verify the Results**
+- Run the job twice: once with `SHOW` set to `true` and once with `false`.
+- Observe how the output changes based on the parameter value.
 
 <div align="right">
   <strong>
