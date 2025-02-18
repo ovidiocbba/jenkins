@@ -8,6 +8,8 @@
   - [4. Create a Docker Compose File for Jenkins](#4-create-a-docker-compose-file-for-jenkins)
   - [5. Create a Docker Container for Jenkins](#5-create-a-docker-container-for-jenkins)
   - [6. Access Jenkins](#6-access-jenkins)
+- [Section 3: Getting Started with Jenkins](#section-3-getting-started-with-jenkins)
+  - [1. Create Your First Jenkins Job](#1-create-your-first-jenkins-job)
 
 
 ## Section 1: Resources for this course
@@ -169,6 +171,65 @@ Restart Jenkins:
 ```sh
 docker-compose up -d
 ```
+
+Interact with the container
+```sh
+docker exec -ti jenkins bash
+```  
+To view the Java version
+```sh
+java -version
+ ```
+To exit
+```sh
+exit
+ ```
+**`docker exec`**:
+   - This command is used to run a command in a running container.
+   - It allows you to interact with the container’s file system and environment.
+
+**`-ti`**:
+   - **`-t`**: This flag allocates a pseudo-TTY, which means it enables terminal features like command-line input and output.
+   - **`-i`**: This flag stands for "interactive" and keeps the standard input open, which allows you to interact with the container in real-time.
+
+**`jenkins`**:
+   - This is the **name of the running container**. It is the name or ID of the container where the command will be executed. In this case, it refers to a container running Jenkins.
+
+**`bash`**:
+   - This is the command being executed inside the container. It launches the **Bash shell** inside the Jenkins container, allowing you to interact with the container as if you were logged into a Linux terminal.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 3: Getting Started with Jenkins
+
+### 1. Create Your First Jenkins Job
+
+To create your first Jenkins job, follow these steps:
+
+1. **Access Jenkins Dashboard:**
+   Open Jenkins in your browser by navigating to `http://localhost:8080` (or the URL where your Jenkins is running).
+
+2. **Create a New Job:**
+   - On the Jenkins Dashboard, click on **`+ New Item`**.
+   - Enter a name for your job (**e.g**., `my-first-job`).
+   - Select **Freestyle project** and click **`OK`**.
+
+3. **Configure Your Job:**
+   1. Click on **Build Steps** .
+   2. Click on **Add build step** and select **Execute shell** (or **Execute Windows batch command** if you're using Windows). 
+   3. In the **Command** field, enter the following script:
+
+      ```bash
+      echo Hello World
+      ```
+   - Click **`Save`** once you’re done.
+
+4. **Run the Job:**
+   - After saving the job, you can run it by clicking **Build Now** on the job's page.
 
 <div align="right">
   <strong>
