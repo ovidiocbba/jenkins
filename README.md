@@ -12,6 +12,7 @@
   - [1. Create Your First Jenkins Job](#1-create-your-first-jenkins-job)
   - [2. Keep Playing with Your First Jenkins Job](#2-keep-playing-with-your-first-jenkins-job)
   - [3. Redirect your first Job's output](#3-redirect-your-first-jobs-output)
+  - [4. Learn how to execute a bash script from Jenkins](#4-learn-how-to-execute-a-bash-script-from-jenkins)
 
 
 ## Section 1: Resources for this course
@@ -309,6 +310,118 @@ cat /tmp/info
 ```bash
 Hello, Ovidio. Current date and time is Tue Feb 18 19:56:12 UTC 2025
 ```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 4. Learn how to execute a bash script from Jenkins
+
+**1. Create a Shell Script**
+First, create a script outside of the Jenkins container, since containers typically have only essential packages.
+
+1. Create a new script file named `script.sh`.
+2. Edit the file using a text editor like `vi`:
+
+   ```sh
+   vi script.sh
+   ```
+
+4. Press `i` to enter insert mode and add the following content:
+
+   ```sh
+   #!/bin/bash
+   echo "Hello, $1 $2"
+   ```
+
+5. Save and exit (`ESC` → `:wq` → `Enter`).
+
+6. Give the script executable permissions:
+
+   ```sh
+   chmod +x script.sh
+   ```
+   **chmod** → Changes file permissions.  
+   **+x** → Adds execution permissions (**allows the file to be run as a program**).
+
+**2. Copy the Script to the Jenkins Container**
+Since the script was created outside the container, copy it inside using `docker cp`:
+
+```sh
+   docker cp script.sh jenkins:/tmp/script.sh
+```
+Output:
+```sh
+Successfully copied 2.05kB to jenkins:/tmp/script.sh
+```
+
+**3. Verify the Script in the Container**
+1. Access the Jenkins container:
+
+   ```sh
+   docker exec -ti jenkins bash
+   ```
+
+2. Check if the script is inside `/tmp/`:
+
+   ```sh
+   ls /tmp/script.sh
+   ```
+
+3. Execute the script manually:
+
+   ```sh
+   /tmp/script.sh John Doe
+   ```
+
+**Expected output:**
+
+```sh
+Hello, John Doe
+```
+
+**4. Configure a Jenkins Job to Run the Script**
+1. Open **Jenkins Dashboard**.
+2. Create a new **Freestyle Project**.
+3. Go to **Build Steps** → **Add build step** → **Execute shell**.
+4. Enter the command:
+
+   ```sh
+   /tmp/script.sh John Doe
+   ```
+
+5. Save the job.
+
+**5. Run and Verify the Job**
+1. Click **Build Now**.
+2. Check the console output:
+
+   ```sh
+   Hello, John Doe
+   ```
+
+**6. Using Variables Instead of Hardcoded Values**
+Modify the job to use Jenkins environment variables:
+
+1. Edit the job's **Execute shell** command:
+
+   ```sh
+   NAME="John"
+   LASTNAME="Doe"
+   /tmp/script.sh "$NAME" "$LASTNAME"
+   ```
+
+2. Save and re-run the job.
+
+**7. Debugging Errors**
+- If the job fails, check the **Console Output**.
+- Failed jobs appear in **red**, while successful ones are **blue**.
+- Common issues:
+  - Incorrect file path → Verify with `ls /tmp/`.
+  - Missing execute permissions → Run `chmod +x /tmp/script.sh`.
+  - Syntax errors in the script → Check using `bash -n script.sh`.
 
 <div align="right">
   <strong>
