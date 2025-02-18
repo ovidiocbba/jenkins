@@ -354,7 +354,15 @@ Since the script was created outside the container, copy it inside using `docker
 ```sh
 docker cp script.sh jenkins:/tmp/script.sh
 ```
-Output:
+This command copies a file from the **`host machine`** to a **`Docker container`**.
+
+**docker cp** → The Docker command to copy files between **`the host`** and **`a container`**.  
+**script.sh** → The file on the host machine that you want to copy.  
+**jenkins:/tmp/script.sh** → The destination inside the container:  
+  - **jenkins** → The name or container ID of the running container.  
+  - **/tmp/script.sh** → The target location inside the container where the file will be placed.  
+
+**Output:**
 ```sh
 Successfully copied 2.05kB to jenkins:/tmp/script.sh
 ```
