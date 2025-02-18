@@ -13,6 +13,7 @@
   - [2. Keep Playing with Your First Jenkins Job](#2-keep-playing-with-your-first-jenkins-job)
   - [3. Redirect your first Job's output](#3-redirect-your-first-jobs-output)
   - [4. Learn how to execute a bash script from Jenkins](#4-learn-how-to-execute-a-bash-script-from-jenkins)
+  - [5. Add parameters to your Job](#5-add-parameters-to-your-job)
 
 
 ## Section 1: Resources for this course
@@ -437,6 +438,57 @@ Modify the job to use Jenkins environment variables:
   - Incorrect file path → Verify with `ls /tmp/`.
   - Missing execute permissions → Run `chmod +x /tmp/script.sh`.
   - Syntax errors in the script → Check using `bash -n script.sh`.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 5. Add parameters to your Job
+
+**1. Open Job Configuration**
+1. Navigate to **Jenkins Dashboard**.
+2. Select the job you want to modify.
+3. Click on **Configure**.
+
+**2. Enable Parameters in the Job**
+1. In the **General** section, check the box **This project is parameterized**.
+2. Click **Add Parameter** and select **String Parameter**.
+
+**3. Define the Parameters**
+1. Add a **First Name** parameter:
+   - Name: `FIRST_NAME`
+   - Default Value: `Simon`
+2. Add a **Second Name** parameter:
+   - Name: `SECOND_NAME`
+   - Default Value: `Ovidio`
+
+**4. Modify the Job to Use Parameters**
+1. In the **Build** section, select **Execute shell**.
+2. Replace any hardcoded names with the parameters:
+   ```sh
+   echo "Hello $FIRST_NAME $SECOND_NAME"
+   ```
+3. Click **Save**.
+
+**5. Execute the Job with Parameters**
+1. Click **`Build with Parameters`**.
+2. Enter new values (or use default values).
+3. Click **Build**.
+
+**6. Check the Output**
+1. Click on the new build instance.
+2. Select **Console Output**.
+3. You should see the dynamic greeting:
+   ```
+   Hello Simon Ovidio
+   ```
+
+**Benefits of Using Parameters**
+- **Dynamic Inputs**: Modify values without changing the job configuration.
+- **Reusability**: Use **the same job** for `different scenarios`.
+- **Environment Flexibility**: Pass variables like `dev`, `staging`, or `production` dynamically.
 
 <div align="right">
   <strong>
