@@ -94,9 +94,9 @@ Run the following command in the directory where `docker-compose.yml` is located
   docker-compose up -d
   ```
 
-**docker-compose up** → Starts the **containers** defined in the `docker-compose.yml` file. If they don’t exist, it creates them.
+  **docker-compose up** → Starts the **containers** defined in the `docker-compose.yml` file. If they don’t exist, it creates them.
 
-**-d** (detached mode) → **Runs the containers** in the **background**, so the **terminal is free** for other tasks. 
+  **-d** (detached mode) → **Runs the containers** in the **background**, so the **terminal is free** for other tasks. 
 
 - Verify that the **container** is running:
   ```sh
@@ -106,11 +106,11 @@ Run the following command in the directory where `docker-compose.yml` is located
   ```sh
   docker logs -f jenkins
   ```
-**`docker logs`** → Displays the logs (records) of a running container.
+  **`docker logs`** → Displays the logs (records) of a running container.
 
-**`-f` (follow)** → Keeps updating the logs in real-time. It’s like watching live logs as the container generates new entries.
+  **`-f` (follow)** → Keeps updating the logs in real-time. It’s like watching live logs as the container generates new entries.
 
-**`jenkins`** → The **name of the container** whose logs you want to view.
+  **`jenkins`** → The **name of the container** whose logs you want to view.
 
 <div align="right">
   <strong>
