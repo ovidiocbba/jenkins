@@ -16,6 +16,8 @@
   - [5. Add parameters to your Job](#5-add-parameters-to-your-job)
   - [6.Learn How to Create a Jenkins List Parameter with Your Script](#6learn-how-to-create-a-jenkins-list-parameter-with-your-script)
   - [7. Add basic logic and boolean parameters](#7-add-basic-logic-and-boolean-parameters)
+- [Section 4: Jenkins \& Docker](#section-4-jenkins--docker)
+  - [1. Docker + Jenkins + SSH](#1-docker--jenkins--ssh)
 
 
 ## Section 1: Resources for this course
@@ -654,6 +656,119 @@ In the **Build Steps** section:
 **5. Verify the Results**
 - Run the job twice: once with `SHOW` set to `true` and once with `false`.
 - Observe how the output changes based on the parameter value.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 4: Jenkins & Docker
+**Setting Up SSH for Remote Server Access**
+
+**Step 1: Generate SSH Key Pair**
+
+To create a secure SSH key pair, use the following command:
+
+```sh
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f ~/.ssh/id_rsa_remote
+```
+
+**Explanation:**
+
+- `-t rsa` → Specifies the **RSA algorithm** for key generation.
+- `-b 4096` → Generates a **`4096-bit key`** for stronger encryption.
+- `-C "your_email@example.com"` → Adds an optional **comment** (e.g., your email) for identification.
+- `-f ~/.ssh/id_rsa_remote` → **Saves the key pair** with the `specified name`.
+
+After running this command:
+- You will have two files: `id_rsa_remote` **(private key)** and `id_rsa_remote.pub` **(public key)**.
+- The private key remains on your local machine, while the **`public key`** must be **added to the remote server**.
+
+**Step 2: Configure SSH Client**
+
+Create or **edit** the SSH configuration file **on your local machine**:
+
+```sh
+nano ~/.ssh/config
+```
+
+Add the following configuration:
+
+```sh
+Host myremote
+    HostName your.server.ip
+    User remote_user
+    IdentityFile ~/.ssh/id_rsa_remote
+    Port 22
+```
+
+**Explanation:**
+
+- `Host myremote` → Defines a shortcut name for the remote server.
+- `HostName your.server.ip` → Specifies the server’s IP address or domain.
+- `User your_remote_user` → Defines the username to use for connection.
+- `IdentityFile ~/.ssh/id_rsa_remote` → Specifies the private key to use.
+- `Port 22` → Defines the SSH port (default is 22).
+
+**Step 3: Connect to Remote Server**
+
+Now, you can connect to your remote server using:
+
+```sh
+ssh myremote
+```
+
+This will automatically use the specified private key and login credentials.
+
+**Optional: Test SSH Connection**
+
+Run the following to check if your SSH key is working:
+
+```sh
+ssh -i ~/.ssh/id_rsa_remote your_remote_user@your.server.ip
+```
+
+If successful, you should be logged into the remote server without entering a password.
+
+### 1. Docker + Jenkins + SSH
+
+**Copy the Public Key to the Build Context**
+
+Move **the generated public key** to the **`centos7`** directory, where the `Dockerfile is located`:
+
+```shell
+cp ~/.ssh/id_rsa_remote.pub .
+```
+
+**Create a Docker image using a docker file**
+
+Before building the **Docker image**, ensure that `id_rsa_remote.pub` is copied into the same directory as the **Dockerfile**:
+
+**Dockerfile**
+```dockerfile
+# Use CentOS 7 as the base image
+FROM centos:7
+
+# Install the OpenSSH server
+RUN yum -y install openssh-server
+
+# Create a new user 'remote_user' with password '1234' (not secure for production)
+RUN useradd remote_user && \
+    echo "1234" | passwd remote_user --stdin && \  # Set the user's password
+    mkdir /home/remote_user/.ssh && \  # Create the SSH directory for the user
+    chmod 700 /home/remote_user/.ssh  # Set proper permissions to secure the SSH directory
+
+# Copy the public key to the authorized_keys file for passwordless SSH access
+COPY id_rsa_remote.pub /home/remote_user/.ssh/authorized_keys
+
+# Change ownership of the home directory and set correct permissions for the key
+RUN chown remote_user:remote_user -R /home/remote_user && \  # Give ownership to the user
+    chmod 400 /home/remote_user/.ssh/authorized_keys  # Secure the authorized_keys file
+
+# Generate necessary SSH host keys
+RUN ssh-keygen -A
+```
 
 <div align="right">
   <strong>
