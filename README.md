@@ -998,7 +998,9 @@ Due to these warnings the test was not performed.
 7. Click **Check the connection**.
 8. Click **Save** to finalize the configuration.
 9. Jenkins is now configured to communicate with the remote host via SSH.
+
 ✅ If successful, you will see a confirmation message.
+
 ![SHH credentials](images/docker_SSH_server_with_jenkins_2.png)
 
 <div align="right">
