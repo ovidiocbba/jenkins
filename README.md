@@ -1011,6 +1011,62 @@ Due to these warnings the test was not performed.
 
 ### 4. Run your a Jenkins job on your Docker remote host through SSH
 
+**1. Create a New Jenkins Job**
+
+1. Open Jenkins and navigate to the main dashboard.
+2. Click on **New Item**.
+3. Enter a name for your job (e.g., `remote-task`).
+4. Select **Freestyle Project**.
+5. Click **OK**.
+
+You should now see the configuration screen for the new job.
+
+**2. Configure the Build Section**
+
+1. Scroll down to the **Build Steps** section.
+2. Click **Add build step**.
+3. Select **Execute shell script on remote host using SSH**.
+4. In the dropdown, select the remote host you have configured.
+   - If you only have one SSH configuration, it will appear here.
+5. `SSH site:` remote_user@remote_host:22
+6. Enter the command you want to run on the remote host.
+
+**Example:**
+
+```bash
+NAME=Ricardo
+
+# Redirect output to a file
+echo "Hello, $NAME. Current date and time is: $(date)" > /tmp/remote_file
+```
+![SHH Configuration](images/docker_SSH_server_with_jenkins_3.png)
+
+This command creates a file called `remote_file` in the `/tmp` directory on the remote host.
+
+**4. Run the Jenkins Job**
+
+1. Save the configuration.
+2. Click **Build Now**.
+3. Open the **Console Output** to check the build logs.
+4. The logs should indicate that the SSH script started and completed successfully.
+
+---
+
+**Verifying the Output**
+
+1. Access your Jenkins container’s terminal:
+`container_name`: remote-host
+```bash
+docker exec -it <container_name> bash
+```
+
+2. Check if the file exists in the Jenkins container:
+
+```bash
+ls /tmp/remote_file
+```
+![SHH Configuration](images/docker_SSH_server_with_jenkins_4.png)
+✅ You should see the file on the `remote host`.
 
 <div align="right">
   <strong>
