@@ -773,7 +773,7 @@ The `docker-compose.yml` defines the services needed to connect **Jenkins to the
 `jenkins`: Runs **Jenkins**, which can `connect` to **remote_host** `via SSH`  
 `remote_host`: Runs the SSH server inside a container.
 
-```dockerfile
+```yaml
 version: '3.8' # Specify the Docker Compose file format version
 services:
   jenkins:
@@ -1086,7 +1086,7 @@ ls /tmp/remote_file
 
 Create a `docker-compose.yml` file with the following content:
 
-```docker
+```yaml
 services:
   jenkins:
     container_name: jenkins
