@@ -763,6 +763,11 @@ CMD /usr/sbin/sshd -D
 ```
 **Create a docker-compose.yml**
 
+The `docker-compose.yml` defines the services needed to connect **Jenkins to the remote server** (remote_host).
+
+`jenkins`: Runs **Jenkins**, which can `connect` to **remote_host** `via SSH`  
+`remote_host`: Runs the SSH server inside a container.
+
 ```dockerfile
 version: '3.8' # Specify the Docker Compose file format version
 services:
@@ -827,6 +832,7 @@ Enter the password that was previously set.
 ```
 ![Docker](images/docker_jenkins_ssh_4.png)
 
+**Connect from Jenkins to remote_host using SSH:**
 
 ```bash
 docker exec -it jenkins bash
