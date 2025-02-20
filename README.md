@@ -1026,9 +1026,9 @@ You should now see the configuration screen for the new job.
 1. Scroll down to the **Build Steps** section.
 2. Click **Add build step**.
 3. Select **Execute shell script on remote host using SSH**.
-4. In the dropdown, select the remote host you have configured.
+4. In the dropdown, **select the remote host** you have configured.
    - If you only have one SSH configuration, it will appear here.
-5. `SSH site:` remote_user@remote_host:22
+5. **`SSH site:`** remote_user@remote_host:22
 6. Enter the command you want to run on the remote host.
 
 **Example:**
@@ -1064,7 +1064,7 @@ This command creates a file called `remote_file` in the `/tmp` directory on the 
 docker exec -it <container_name> bash
 ```
 
-1. Check if the file exists in the Jenkins container:
+2. Check if the file exists in the Jenkins container:
 
 ```bash
 ls /tmp/remote_file
