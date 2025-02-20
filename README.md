@@ -1050,17 +1050,21 @@ This command creates a file called `remote_file` in the `/tmp` directory on the 
 3. Open the **Console Output** to check the build logs.
 4. The logs should indicate that the SSH script started and completed successfully.
 
+![SHH Configuration](images/docker_SSH_server_with_jenkins_3_2.png)
+
 ---
 
 **Verifying the Output**
 
 1. Access your Jenkins container’s terminal:
+
 `container_name`: remote-host
+
 ```bash
 docker exec -it <container_name> bash
 ```
 
-2. Check if the file exists in the Jenkins container:
+1. Check if the file exists in the Jenkins container:
 
 ```bash
 ls /tmp/remote_file
