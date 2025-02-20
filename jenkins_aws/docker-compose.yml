@@ -1,0 +1,36 @@
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_home_data:/var/jenkins_home # Persist Jenkins data (configs, plugins, jobs)
+    networks:
+      - net # Define a custom Docker network
+  remote_host:
+    container_name: remote-host
+    image: remote-host
+    build:
+      context: . # Define the build context ('Dockerfile' should be inside the 'centos7' directory)
+    networks:
+      - net
+  db_host:
+    container_name: db
+    image: mysql:5.7
+    environment:
+      # Set the root password for MySQL
+      MYSQL_ROOT_PASSWORD: "1234"  
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - net
+
+networks:
+  net: # Define a custom Docker network to enable communication between containers
+
+# These volumes (jenkins_home_data and db_data) 
+# are managed by Docker and stored in its volume system
+volumes:
+  jenkins_home_data: 
+  db_data:

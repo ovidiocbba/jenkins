@@ -21,6 +21,8 @@
   - [2. Learn how to install Jenkins Plugins (SSH Plugin)](#2-learn-how-to-install-jenkins-plugins-ssh-plugin)
   - [3. Integrate your Docker SSH server with Jenkins](#3-integrate-your-docker-ssh-server-with-jenkins)
   - [4. Run your a Jenkins job on your Docker remote host through SSH](#4-run-your-a-jenkins-job-on-your-docker-remote-host-through-ssh)
+- [Section 5: Jenkins \& AWS](#section-5-jenkins--aws)
+  - [1. Create a MySQL server on Docker](#1-create-a-mysql-server-on-docker)
 
 
 ## Section 1: Resources for this course
@@ -1071,6 +1073,128 @@ ls /tmp/remote_file
 ```
 ![SHH Configuration](images/docker_SSH_server_with_jenkins_4.png)
 ✅ You should see the file on the `remote host`.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 5: Jenkins & AWS
+
+### 1. Create a MySQL server on Docker
+
+Create a `docker-compose.yml` file with the following content:
+
+```docker
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_home_data:/var/jenkins_home # Persist Jenkins data (configs, plugins, jobs)
+    networks:
+      - net # Define a custom Docker network
+  remote_host:
+    container_name: remote-host
+    image: remote-host
+    build:
+      context: . # Define the build context ('Dockerfile' should be inside the 'centos7' directory)
+    networks:
+      - net
+  db_host:
+    container_name: db
+    image: mysql:5.7
+    environment:
+      # Set the root password for MySQL
+      MYSQL_ROOT_PASSWORD: "1234"  
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - net
+
+networks:
+  net: # Define a custom Docker network to enable communication between containers
+
+# These volumes (jenkins_home_data and db_data) 
+# are managed by Docker and stored in its volume system
+volumes:
+  jenkins_home_data: 
+  db_data:
+```
+
+To start the MySQL server with Docker Compose, run:
+
+```bash
+docker-compose up -d
+```
+**Output**
+```bash
+$ docker-compose up -d
+[+] Running 3/3
+ ✔ Container remote-host  Started                                                        1.1s
+ ✔ Container jenkins      Started                                                        0.8s
+ ✔ Container db           Started                                                        0.8s
+```
+![Jenkins AWS](images/jenkins_aws_1.png)
+
+**Access the MySQL Server**
+
+**Output**
+```bash
+docker exec -ti db bash
+```
+```bash
+mysql -u root -p
+```
+Enter the password when prompted:
+
+```bash
+Enter password: 1234
+```
+**Outuput**
+```bash
+$ docker exec -ti db bash
+bash-4.2# mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2
+Server version: 5.7.44 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql>
+```
+**List Databases in MySQL**
+
+To check the available databases, run:
+
+```bash
+show databases
+```
+**Output**
+```bash
+mysql> ;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.01 sec)
+
+mysql>
+```
 
 <div align="right">
   <strong>
