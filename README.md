@@ -710,26 +710,6 @@ Host myremote
 - `IdentityFile ~/.ssh/id_rsa_remote` → Specifies the private key to use.
 - `Port 22` → Defines the SSH port (default is 22).
 
-**Step 3: Connect to Remote Server**
-
-Now, you can connect to your remote server using:
-
-```sh
-ssh myremote
-```
-
-This will automatically use the specified private key and login credentials.
-
-**Optional: Test SSH Connection**
-
-Run the following to check if your SSH key is working:
-
-```sh
-ssh -i ~/.ssh/id_rsa_remote your_remote_user@your.server.ip
-```
-
-If successful, you should be logged into the remote server without entering a password.
-
 ### 1. Docker + Jenkins + SSH
 
 **Copy the Public Key to the Build Context**
@@ -799,7 +779,7 @@ services:
     container_name: remote-host
     image: remote-host
     build:
-      context: centos7 # Define the build context ('Dockerfile' should be inside the 'centos7' directory)
+      context: . # Define the build context ('Dockerfile' should be inside the 'centos7' directory)
     networks:
       - net
 
@@ -828,6 +808,8 @@ To create the services:
 docker-compose up -d
 ```
 ![Docker](images/docker_jenkins_ssh_3.png)
+
+**Accessing the Remote Host from Jenkins**
 
 ```bash
 docker exec -it jenkins bash
@@ -865,6 +847,9 @@ remote_user@remote_host's password:
 Last login: Thu Feb 20 00:37:28 2025 from jenkins.centos7_net
 [remote_user@2719f66fe039 ~]$
 ```
+
+To check the connection:
+
 ```bash
 ping remote_host
 ```
@@ -877,12 +862,16 @@ PING remote_host (172.20.0.2) 56(84) bytes of data.
 64 bytes from 2719f66fe039 (172.20.0.2): icmp_seq=3 ttl=64 time=0.037 ms
 64 bytes from 2719f66fe039 (172.20.0.2): icmp_seq=4 ttl=64 time=0.035 ms
 ```
+
+**Using Private Key Instead of Password**
+
 If you don't want to enter the password you can add your private key:
 
 Move the generated **`private key`** to the **centos7** directory, where the **Dockerfile** is located:
 ```shell
 cp ~/.ssh/id_rsa_remote .
 ```
+Move the **private key** to the `jenkins` container:
 ```shell
 docker cp id_rsa_remote jenkins:/tmp/id_rsa_remote
 ```
@@ -906,6 +895,7 @@ hsperfdata_jenkins  jetty-0_0_0_0-8080-war-_-any-7277700481180075564
 id_rsa_remote       winstone10295603392971035092.jar
 jenkins@561dd820647f:/tmp$
 ```
+**To log in without a password:**
 Log in using your `private key` file:(You no longer need to enter the key)
 ```bash
 ssh -i id_rsa_remote remote_user@remote_host
@@ -916,6 +906,7 @@ jenkins@561dd820647f:/tmp$ ssh -i id_rsa_remote remote_user@remote_host
 Last login: Thu Feb 20 00:37:44 2025 from jenkins.centos7_net
 [remote_user@2719f66fe039 ~]$
 ```
+This setup allows secure SSH access between Jenkins and a remote server.
 
 <div align="right">
   <strong>
