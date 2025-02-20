@@ -895,7 +895,9 @@ hsperfdata_jenkins  jetty-0_0_0_0-8080-war-_-any-7277700481180075564
 id_rsa_remote       winstone10295603392971035092.jar
 jenkins@561dd820647f:/tmp$
 ```
+
 **To log in without a password:**
+
 Log in using your `private key` file:(You no longer need to enter the key)
 ```bash
 ssh -i id_rsa_remote remote_user@remote_host
@@ -907,6 +909,32 @@ Last login: Thu Feb 20 00:37:44 2025 from jenkins.centos7_net
 [remote_user@2719f66fe039 ~]$
 ```
 This setup allows secure SSH access between Jenkins and a remote server.
+
+**To enter the remote host**
+```shell
+docker exec -it remote-host bash
+cat /etc/centos-release
+```
+**Output**
+```bash
+$ docker exec -it remote-host bash
+[root@2719f66fe039 /]# cat /etc/centos-release
+CentOS Linux release 7.9.2009 (Core)
+```
+**Check if the package is installed**
+
+**OpenSSH server**
+
+```shell
+rpm -q openssh-server
+```
+
+**Output**
+
+```shell
+[root@2719f66fe039 /]# rpm -q openssh-server
+openssh-server-7.4p1-23.el7_9.x86_64
+```
 
 <div align="right">
   <strong>
