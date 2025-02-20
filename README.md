@@ -803,7 +803,7 @@ docker images
 ```
 ![Docker](images/docker_jenkins_ssh_2.png)
 
-To create the services:
+Start the services (`jenkins` and `remote_host`)
 ```shell
 docker-compose up -d
 ```
