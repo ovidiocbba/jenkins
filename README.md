@@ -18,6 +18,9 @@
   - [7. Add basic logic and boolean parameters](#7-add-basic-logic-and-boolean-parameters)
 - [Section 4: Jenkins \& Docker](#section-4-jenkins--docker)
   - [1. Docker + Jenkins + SSH](#1-docker--jenkins--ssh)
+  - [2. Learn how to install Jenkins Plugins (SSH Plugin)](#2-learn-how-to-install-jenkins-plugins-ssh-plugin)
+  - [3. Integrate your Docker SSH server with Jenkins](#3-integrate-your-docker-ssh-server-with-jenkins)
+  - [4. Run your a Jenkins job on your Docker remote host through SSH](#4-run-your-a-jenkins-job-on-your-docker-remote-host-through-ssh)
 
 
 ## Section 1: Resources for this course
@@ -941,6 +944,71 @@ rpm -q openssh-server
 [root@2719f66fe039 /]# rpm -q openssh-server
 openssh-server-7.4p1-23.el7_9.x86_64
 ```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Learn how to install Jenkins Plugins (SSH Plugin)
+
+1. Navigate to **Manage Jenkins** > **Plugins**.
+2. Click on **Available Plugins**.
+3. Search for the plugin by typing `SSH` in the search bar.
+4. Select the **SSH** plugin from the search results.
+5. Click the **Install** button.
+6. Wait for the installation to complete and restart Jenkins if necessary.
+
+![SSH Plugin](images/ssh_plugin_1.png)
+
+**Note:**
+
+Due to these warnings the test was not performed.
+
+### 3. Integrate your Docker SSH server with Jenkins
+
+**Step 1: Add SSH Credentials**
+
+1. Select **Jenkins** > **Global credentials**.
+2. Click **Add Credentials**.
+3. For **Kind**, select **SSH Username with private key**.
+4. Enter the following:
+   - **Username:** `remote_user` (the user created in your Dockerfile).
+   - **Private Key:** Copy the content of your private key file (e.g., `remote-key`) using:
+     
+    ```bash
+    cat centos7/remote-key
+    ```
+5. Paste the private key into the Jenkins form.
+6. Click **OK**.
+
+![SHH credentials](images/docker_SSH_server_with_jenkins_1.png)
+
+**Step 2: Add SSH Remote Host in Jenkins**
+
+1. Go to the **Jenkins dashboard**.
+2. Navigate to **Manage Jenkins** > **System Configuration** > **System**
+3. Scroll down to **SSH remote hosts**.
+4. Click **Add**.
+5. Enter the following:
+   - **Hostname:** `remote_host` (as defined in the Docker Compose file).
+   - **Port:** `22` (default SSH port).
+6. Select the **Credentials** from the dropdown (the `remote_user` credentials created earlier).
+7. Click **Check the connection**.
+8. Click **Save** to finalize the configuration.
+9. Jenkins is now configured to communicate with the remote host via SSH.
+✅ If successful, you will see a confirmation message.
+![SHH credentials](images/docker_SSH_server_with_jenkins_2.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 4. Run your a Jenkins job on your Docker remote host through SSH
+
 
 <div align="right">
   <strong>
