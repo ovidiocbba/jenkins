@@ -87,7 +87,6 @@ volumes:
 
 networks:
   net:  
-    driver: bridge  # Use bridge networking mode
 ```
 
 <div align="right">
@@ -697,7 +696,7 @@ Add the following configuration:
 
 ```sh
 Host myremote
-    HostName your.server.ip
+    HostName remote_host
     User remote_user
     IdentityFile ~/.ssh/id_rsa_remote
     Port 22
@@ -706,7 +705,7 @@ Host myremote
 **Explanation:**
 
 - `Host myremote` → Defines a shortcut name for the remote server.
-- `HostName your.server.ip` → Specifies the server’s IP address or domain.
+- `HostName your.server.ip` → Specifies the server’s IP address or **domain**.
 - `User your_remote_user` → Defines the username to use for connection.
 - `IdentityFile ~/.ssh/id_rsa_remote` → Specifies the private key to use.
 - `Port 22` → Defines the SSH port (default is 22).
@@ -743,31 +742,179 @@ cp ~/.ssh/id_rsa_remote.pub .
 
 **Create a Docker image using a docker file**
 
-Before building the **Docker image**, ensure that `id_rsa_remote.pub` is copied into the same directory as the **Dockerfile**:
+Before building the **Docker image**, ensure that `id_rsa_remote.pub` is copied into **the same directory** as the **Dockerfile**:
 
 **Dockerfile**
 ```dockerfile
 # Use CentOS 7 as the base image
 FROM centos:7
 
+# Reconfigure the repository to use CentOS Vault
+RUN sed -i 's|mirrorlist=http://mirrorlist.centos.org|#mirrorlist=http://mirrorlist.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo
+
 # Install the OpenSSH server
 RUN yum -y install openssh-server
 
-# Create a new user 'remote_user' with password '1234' (not secure for production)
+# Line 1: Add a new user 'remote_user'  
+# Line 2: Set up the user's password (WARNING: Change this in production)  
+# Line 3: Create the SSH directory for the user  
+# Line 4: Set proper permissions to secure the SSH directory
 RUN useradd remote_user && \
-    echo "1234" | passwd remote_user --stdin && \  # Set the user's password
-    mkdir /home/remote_user/.ssh && \  # Create the SSH directory for the user
-    chmod 700 /home/remote_user/.ssh  # Set proper permissions to secure the SSH directory
+    echo "1234" | passwd remote_user --stdin && \  
+    mkdir /home/remote_user/.ssh && \ 
+    chmod 700 /home/remote_user/.ssh  
 
 # Copy the public key to the authorized_keys file for passwordless SSH access
 COPY id_rsa_remote.pub /home/remote_user/.ssh/authorized_keys
 
 # Change ownership of the home directory and set correct permissions for the key
-RUN chown remote_user:remote_user -R /home/remote_user && \  # Give ownership to the user
+# Line 1: Give ownership to the user
+RUN chown remote_user:remote_user -R /home/remote_user && \  
     chmod 400 /home/remote_user/.ssh/authorized_keys  # Secure the authorized_keys file
 
 # Generate necessary SSH host keys
 RUN ssh-keygen -A
+
+# Start the SSH service and keep the container running
+# The "-D" flag prevents sshd from running as a background daemon,
+# ensuring the container does not exit immediately after startup.
+CMD /usr/sbin/sshd -D
+```
+**Create a docker-compose.yml**
+
+```dockerfile
+version: '3.8' # Specify the Docker Compose file format version
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_home_data:/var/jenkins_home # Persist Jenkins data (configs, plugins, jobs)
+    networks:
+      - net # Define a custom Docker network
+  remote_host:
+    container_name: remote-host
+    image: remote-host
+    build:
+      context: centos7 # Define the build context ('Dockerfile' should be inside the 'centos7' directory)
+    networks:
+      - net
+
+networks:
+  net: # Define a custom Docker network to enable communication between containers
+
+volumes:
+  jenkins_home_data: # Define a persistent volume for Jenkins data storage
+```
+Run the following code to create the image:
+
+```shell
+docker-compose build
+```
+![Docker](images/docker_jenkins_ssh_1.png)
+
+ 
+To see that the image was created successfully(`remote-host`)
+```shell
+docker images
+```
+![Docker](images/docker_jenkins_ssh_2.png)
+
+To create the services:
+```shell
+docker-compose up -d
+```
+![Docker](images/docker_jenkins_ssh_3.png)
+
+```bash
+docker exec -it jenkins bash
+```
+
+```bash
+yes
+```
+```bash
+yes
+```
+Enter the password that was previously set.
+```bash
+1234
+```
+![Docker](images/docker_jenkins_ssh_4.png)
+
+
+```bash
+docker exec -it jenkins bash
+```
+```bash
+ssh remote_user@remote_host
+```
+Enter the password that was previously set.
+```bash
+1234
+```
+
+**Output**
+```shell
+$ docker exec -it jenkins bash
+jenkins@561dd820647f:/$ ssh remote_user@remote_host
+remote_user@remote_host's password:
+Last login: Thu Feb 20 00:37:28 2025 from jenkins.centos7_net
+[remote_user@2719f66fe039 ~]$
+```
+```bash
+ping remote_host
+```
+**Output**
+```shell
+[remote_user@2719f66fe039 ~]$ ping remote_host
+PING remote_host (172.20.0.2) 56(84) bytes of data.
+64 bytes from 2719f66fe039 (172.20.0.2): icmp_seq=1 ttl=64 time=1.61 ms
+64 bytes from 2719f66fe039 (172.20.0.2): icmp_seq=2 ttl=64 time=0.029 ms
+64 bytes from 2719f66fe039 (172.20.0.2): icmp_seq=3 ttl=64 time=0.037 ms
+64 bytes from 2719f66fe039 (172.20.0.2): icmp_seq=4 ttl=64 time=0.035 ms
+```
+If you don't want to enter the password you can add your private key:
+
+Move the generated **`private key`** to the **centos7** directory, where the **Dockerfile** is located:
+```shell
+cp ~/.ssh/id_rsa_remote .
+```
+```shell
+docker cp id_rsa_remote jenkins:/tmp/id_rsa_remote
+```
+**Output**
+```shell
+$ docker cp id_rsa_remote jenkins:/tmp/id_rsa_remote
+Successfully copied 5.12kB to jenkins:/tmp/id_rsa_remote
+```
+To see your private key
+```bash
+docker exec -it jenkins bash
+cd /tmp/
+ls
+```
+**Output**
+```bash
+$ docker exec -it jenkins bash
+jenkins@561dd820647f:/$ cd /tmp/
+jenkins@561dd820647f:/tmp$ ls
+hsperfdata_jenkins  jetty-0_0_0_0-8080-war-_-any-7277700481180075564
+id_rsa_remote       winstone10295603392971035092.jar
+jenkins@561dd820647f:/tmp$
+```
+Log in using your `private key` file:(You no longer need to enter the key)
+```bash
+ssh -i id_rsa_remote remote_user@remote_host
+```
+**Output**
+```shell
+jenkins@561dd820647f:/tmp$ ssh -i id_rsa_remote remote_user@remote_host
+Last login: Thu Feb 20 00:37:44 2025 from jenkins.centos7_net
+[remote_user@2719f66fe039 ~]$
 ```
 
 <div align="right">

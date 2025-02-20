@@ -16,4 +16,3 @@ volumes:
 
 networks:
   net:  
-    driver: bridge  # Use bridge networking mode
