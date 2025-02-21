@@ -23,6 +23,8 @@
   - [4. Run your a Jenkins job on your Docker remote host through SSH](#4-run-your-a-jenkins-job-on-your-docker-remote-host-through-ssh)
 - [Section 5: Jenkins \& AWS](#section-5-jenkins--aws)
   - [1. Create a MySQL server on Docker](#1-create-a-mysql-server-on-docker)
+  - [2. Install MySQL Client and AWS CLI](#2-install-mysql-client-and-aws-cli)
+  - [3. Create a MySQL Database](#3-create-a-mysql-database)
 
 
 ## Section 1: Resources for this course
@@ -1194,6 +1196,319 @@ mysql> ;
 4 rows in set (0.01 sec)
 
 mysql>
+```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Install MySQL Client and AWS CLI
+
+Before building the **Docker image**, ensure that `id_rsa_remote.pub` is copied into **the same directory** as the **Dockerfile**(`jenkins_aws`):
+
+```dockerfile
+# Use CentOS 7 as the base image
+FROM centos:7
+
+# Reconfigure the repository to use CentOS Vault
+RUN sed -i 's|mirrorlist=http://mirrorlist.centos.org|#mirrorlist=http://mirrorlist.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo
+
+# Install the OpenSSH server
+RUN yum -y install openssh-server
+
+# Line 1: Add a new user 'remote_user'  
+# Line 2: Set up the user's password (WARNING: Change this in production)  
+# Line 3: Create the SSH directory for the user  
+# Line 4: Set proper permissions to secure the SSH directory
+RUN useradd remote_user && \
+    echo "1234" | passwd remote_user --stdin && \  
+    mkdir /home/remote_user/.ssh && \ 
+    chmod 700 /home/remote_user/.ssh  
+
+# Copy the public key to the authorized_keys file for passwordless SSH access
+COPY id_rsa_remote.pub /home/remote_user/.ssh/authorized_keys
+
+# Change ownership of the home directory and set correct permissions for the key
+# Line 1: Give ownership to the user
+RUN chown remote_user:remote_user -R /home/remote_user && \  
+    chmod 400 /home/remote_user/.ssh/authorized_keys  # Secure the authorized_keys file
+
+# Generate necessary SSH host keys
+RUN ssh-keygen -A
+
+# Install MySQL server
+RUN yum -y install mysql
+
+# Line 1: Install EPEL repository to enable additional packages 
+# Line 2: Install Python 3 package manager (pip)
+# Line 3: Upgrade pip to the latest version
+# Line 4: Install AWS CLI for interacting with AWS services  
+RUN yum -y install epel-release && \
+    yum -y install python3-pip && \
+    pip3 install --upgrade pip && \
+    pip3 install awscli
+
+# Start the SSH service and keep the container running
+# The "-D" flag prevents sshd from running as a background daemon,
+# ensuring the container does not exit immediately after startup.
+CMD /usr/sbin/sshd -D
+```
+**Build the Docker Image**
+
+Run the following command to **`build the Docker image`** and **see detailed logs**:
+
+```shell
+docker compose build --progress=plain
+```
+**Output**
+```shell
+--progress is a global compose flag, better use `docker compose --progress xx build ...
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [remote_host internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.92kB 0.0s done
+#1 DONE 0.0s
+
+#2 [remote_host internal] load metadata for docker.io/library/centos:7
+#2 DONE 0.6s
+
+#3 [remote_host internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [remote_host 1/9] FROM docker.io/library/centos:7@sha256:be65f488b7764ad3638f236b7b515b3678369a5124c47b8d32916d6487418ea4
+#4 resolve docker.io/library/centos:7@sha256:be65f488b7764ad3638f236b7b515b3678369a5124c47b8d32916d6487418ea4 0.0s done
+#4 DONE 0.1s
+
+#5 [remote_host internal] load build context
+#5 transferring context: 794B 0.0s done
+#5 DONE 0.0s
+
+#6 [remote_host 2/9] RUN sed -i 's|mirrorlist=http://mirrorlist.centos.org|#mirrorlist=http://mirrorlist.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo &&     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Base.repo
+#6 CACHED
+
+#7 [remote_host 3/9] RUN yum -y install openssh-server
+#7 CACHED
+
+#8 [remote_host 4/9] RUN useradd remote_user &&     echo "1234" | passwd remote_user --stdin &&     mkdir /home/remote_user/.ssh &&     chmod 700 /home/remote_user/.ssh
+#8 CACHED
+
+#9 [remote_host 5/9] COPY id_rsa_remote.pub /home/remote_user/.ssh/authorized_keys
+#9 CACHED
+
+#10 [remote_host 6/9] RUN chown remote_user:remote_user -R /home/remote_user &&     chmod 400 /home/remote_user/.ssh/authorized_keys  # Secure the authorized_keys file
+#10 CACHED
+
+#11 [remote_host 7/9] RUN ssh-keygen -A
+#11 CACHED
+
+#12 [remote_host 8/9] RUN yum -y install mysql
+#12 0.696 Loaded plugins: fastestmirror, ovl
+#12 0.909 Loading mirror speeds from cached hostfile
+#12 3.043 Resolving Dependencies
+#12 3.044 --> Running transaction check
+#12 3.044 ---> Package mariadb.x86_64 1:5.5.68-1.el7 will be installed
+#12 3.054 --> Processing Dependency: mariadb-libs(x86-64) = 1:5.5.68-1.el7 for package: 1:mariadb-5.5.68-1.el7.x86_64
+```
+
+**Recreate `remote-host` to Apply Changes**
+
+After building the **Docker image**, restart the remote-host container to apply the new changes (**`MySQL and AWS CLI installation`**): 
+
+```shell
+docker-compose up -d
+```
+
+**Output**
+
+```bash
+$ docker-compose up -d
+[+] Running 3/3
+ ✔ Container jenkins      Running                                                          0.0s
+ ✔ Container db           Running                                                          0.0s
+ ✔ Container remote-host  Started                                                          0.9s
+```
+**Verify MySQL and AWS CLI Installation**
+
+To access the remote-host container and verify that **MySQL and AWS CLI are installed**, use the following commands:
+
+```bash
+docker exec -ti remote-host bash
+```
+```bash
+mysql --version
+```
+```bash
+aws --version
+```
+
+**Output**
+```bash
+$ docker exec -ti remote-host bash
+[root@9044da6c19a4 /]# mysql --version
+mysql  Ver 15.1 Distrib 5.5.68-MariaDB, for Linux (x86_64) using readline 5.1
+[root@9044da6c19a4 /]# aws --version
+aws-cli/1.24.10 Python/3.6.8 Linux/5.15.167.4-microsoft-standard-WSL2 botocore/1.26.10
+```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 3. Create a MySQL Database
+
+**3.1 Access the Remote Host Container**
+
+**To interact** with the MySQL database, first, access the **`remote host`** container:
+```bash
+docker exec -ti remote-host bash
+```
+**3.2 Connect to MySQL Server**
+
+Use the following command to connect to MySQL. Replace `db_host` with the actual hostname or **container name running MySQL**:
+```bash
+mysql -u root -p -h db_host -p
+```
+When prompted, enter the password:
+
+```bash
+Enter password: 1234
+```
+
+**Output**
+
+```bash
+$ docker exec -ti remote-host bash
+[root@9044da6c19a4 /]# mysql -u root -p -h db_host -p
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MySQL connection id is 2
+Server version: 5.7.44 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+MySQL [(none)]>
+```
+
+**3.3 Show Available Databases**
+
+To list all databases:
+
+```bash
+show databases;
+```
+
+**Output**
+```bash
+MySQL [(none)]> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.02 sec)
+```
+
+**3.4 Create a New Database**
+
+To create a new database named `testdb`:
+
+```bash
+create database testdb;
+```
+**Output**
+```bash
+MySQL [(none)]> create database testdb;
+Query OK, 1 row affected (0.01 sec)
+```
+**3.5 Select the Database**
+
+Use the newly created database:
+
+```bash
+use testdb;
+```
+**Output**
+```bash
+MySQL [(none)]> use testdb;
+Database changed
+```
+**3.6 Create a Table**
+
+Create a table named `info` with the following columns:
+
+- **name**: VARCHAR(20)
+
+- **lastname**: VARCHAR(20)
+
+- **age**: INT(2)
+
+```bash
+create table info (name varchar(20), lastname varchar(20), age int(2));
+```
+**Output**
+```bash
+MySQL [testdb]> create table info (name varchar(20), lastname varchar(20), age int(2));
+Query OK, 0 rows affected (0.05 sec)
+```
+**3.7 Describe Table Structure**
+
+To check the structure of the info table:
+
+```bash
+describe info;
+```
+**Output**
+```bash
+MySQL [testdb]> describe info;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| name     | varchar(20) | YES  |     | NULL    |       |
+| lastname | varchar(20) | YES  |     | NULL    |       |
+| age      | int(2)      | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+```
+**3.8 Insert Data into the Table**
+
+To insert a new row into the info table:
+
+```bash
+insert into info values('ricardo', 'gonzales', 21);
+```
+**Output**
+```bash
+MySQL [testdb]> insert into info values('ricardo', 'gonzales', 21);
+Query OK, 1 row affected (0.02 sec)
+```
+
+**3.9 Retrieve Data from the Table**
+
+To retrieve all rows from the info table:
+
+```bash
+select * from info;
+```
+**Output**
+```bash
+MySQL [testdb]> select * from info;
++---------+----------+------+
+| name    | lastname | age  |
++---------+----------+------+
+| ricardo | gonzales |   21 |
++---------+----------+------+
+1 row in set (0.01 sec)
 ```
 
 <div align="right">
