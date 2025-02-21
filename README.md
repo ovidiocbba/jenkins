@@ -1333,7 +1333,7 @@ $ docker-compose up -d
 ```
 **Verify MySQL and AWS CLI Installation**
 
-To access the remote-host container and verify that **MySQL and AWS CLI are installed**, use the following commands:
+To access the **remote-host** container and verify that **MySQL and AWS CLI are installed**, use the following commands:
 
 ```bash
 docker exec -ti remote-host bash
