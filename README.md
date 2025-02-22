@@ -28,6 +28,7 @@
   - [4. Creating an S3 Bucket on AWS](#4-creating-an-s3-bucket-on-aws)
   - [5. Create a user (IAM) for AWS authentication](#5-create-a-user-iam-for-aws-authentication)
   - [6. Learn how to take a backup and upload it manually to S3](#6-learn-how-to-take-a-backup-and-upload-it-manually-to-s3)
+  - [7. Automate the backup and upload process with a shell script](#7-automate-the-backup-and-upload-process-with-a-shell-script)
 
 
 ## Section 1: Resources for this course
@@ -1700,6 +1701,71 @@ aws s3 cp /tmp/db.sql s3://jenkins-mysql-backup/db.sql
 3. Confirm that `db.sql` appears in the bucket.
 
 ![Image](images/backup_and_upload_it_manually_to_s3_5.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 7. Automate the backup and upload process with a shell script
+
+This guide covers automating the MySQL backup process and uploading it to AWS S3 using a shell script. The script dynamically sets database parameters and timestamps the backups for better organization.
+
+**Steps to Automate MySQL Backup**
+
+**1. Create the Shell Script**
+Log in to the remote host and create a new script file:
+```bash
+nano /tmp/script.sh
+```
+Add the following content:
+```bash
+#/bin/bash
+
+# Get the current time in HH-MM-SS format
+DATE=$(date +%H-%M-%S)
+
+# Define the backup file name with timestamp
+BACKUP=db-$DATE.sql
+
+# Assign script arguments to variables
+DB_HOST=$1        # Database host (passed as the first argument)
+DB_PASSWORD=$2    # Database password (passed as the second argument)
+DB_NAME=$3        # Database name (passed as the third argument)
+AWS_SECRET=$4     # AWS Secret Access Key (passed as the fourth argument)
+BUCKET_NAME=$5    # AWS S3 bucket name (passed as the fifth argument)
+
+# Perform the MySQL database backup and store it in the /tmp directory
+mysqldump -u root -h $DB_HOST -p$DB_PASSWORD $DB_NAME > /tmp/$BACKUP && \
+
+# Export AWS credentials (Access Key ID is hardcoded; Secret Key is passed as an argument)
+export AWS_ACCESS_KEY_ID=AKIAJRWZWY3CPV3F3JPQ && \
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET && \
+
+# Print a message indicating that the upload is starting
+echo "Uploading your $BACKUP backup" && \
+
+# Upload the backup file to the specified S3 bucket
+aws s3 cp /tmp/$BACKUP s3://$BUCKET_NAME/$BACKUP
+```
+
+**2. Make the Script Executable**
+
+```bash
+chmod +x /tmp/script.sh
+```
+
+**Schedule the Script with Cron (Optional-Suggestion)**
+
+To automate backups, add the script to crontab:
+```bash
+crontab -e
+```
+Add the following line to run it daily at midnight:
+```bash
+0 0 * * * /tmp/script.sh db_host 1234 testdb
+```
 
 <div align="right">
   <strong>
