@@ -29,6 +29,7 @@
   - [5. Create a user (IAM) for AWS authentication](#5-create-a-user-iam-for-aws-authentication)
   - [6. Learn how to take a backup and upload it manually to S3](#6-learn-how-to-take-a-backup-and-upload-it-manually-to-s3)
   - [7. Automate the backup and upload process with a shell script](#7-automate-the-backup-and-upload-process-with-a-shell-script)
+  - [8. Learn how to manage sensitive information in Jenkins (Keys, Passwords)](#8-learn-how-to-manage-sensitive-information-in-jenkins-keys-passwords)
 
 
 ## Section 1: Resources for this course
@@ -1766,6 +1767,59 @@ Add the following line to run it daily at midnight:
 ```bash
 0 0 * * * /tmp/script.sh db_host 1234 testdb
 ```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 8. Learn how to manage sensitive information in Jenkins (Keys, Passwords)
+
+**Introduction**
+When working with Jenkins, it is essential to securely manage sensitive information such as passwords, API keys, and secret keys. Exposing these values in scripts or configuration files can lead to security risks. In this guide, we will walk through the process of managing sensitive information using Jenkins credentials.
+
+**Identifying Sensitive Information**
+In our script, we currently have two sensitive pieces of information:
+- **AWS Secret Key**
+- **Database Password**
+
+To properly manage this data, we will use Jenkins Credentials to store and access them securely.
+
+**Storing Credentials in Jenkins**
+
+1. **Navigate to Credentials Management:**
+   - Open Jenkins.
+   - Click on **Manage Jenkins** > **Manage Credentials**.
+   - Select **Jenkins** under the Credentials store.
+   - Click on **Global credentials (unrestricted)**.
+
+
+2. **Adding MySQL Password as a Secret Text:**
+   - Click **Add Credentials**.
+   - Select **Secret text** as the credential type.
+   - In the **ID** field, enter `MYSQL_PASSWORD`.
+   - Copy the database password from your configuration file (e.g., `1234`) and paste it into the **Secret** field.
+   - Click **OK** to save the credential.
+
+![Image](images/sensitive_information_in_jenkins_1.png)
+
+3. **Adding AWS Secret Key as a Secret Text:**
+   - Click **Add Credentials** again.
+   - Select **Secret text** as the credential type.
+   - In the **ID** field, enter `AWS_SECRET_KEY`.
+   - Copy the AWS Secret Access Key provided by Amazon and paste it into the **Secret** field.
+   - Click **OK** to save the credential.
+
+![Image](images/sensitive_information_in_jenkins_2.png)
+
+
+![Image](images/sensitive_information_in_jenkins_3.png)
+
+**Benefits of Using Jenkins Credentials**
+- **Security:** Credentials are encrypted and stored securely in Jenkins.
+- **Access Control:** Only authorized users can access or modify credentials.
+- **Automation:** Credentials can be easily integrated into pipelines without exposing them in scripts.
 
 <div align="right">
   <strong>
