@@ -26,6 +26,7 @@
   - [2. Install MySQL Client and AWS CLI](#2-install-mysql-client-and-aws-cli)
   - [3. Create a MySQL Database](#3-create-a-mysql-database)
   - [4. Creating an S3 Bucket on AWS](#4-creating-an-s3-bucket-on-aws)
+- [5. Create a user (IAM) for AWS authentication](#5-create-a-user-iam-for-aws-authentication)
 
 
 ## Section 1: Resources for this course
@@ -1554,6 +1555,59 @@ Amazon Simple **Storage Service** (Amazon S3) is an **object storage service** t
 2. Click on the **Upload** button.
 3. Select the files you want to upload.
 4. Click **Upload** to store them in the cloud.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## 5. Create a user (IAM) for AWS authentication
+
+**What is IAM?**
+AWS Identity and Access Management (IAM) is a service that helps you securely control access to AWS resources. It allows you to create and manage users, assign permissions, and enforce security policies.
+
+**Why Create an IAM User?**
+To upload backups to AWS, we need to authenticate using IAM credentials. Creating a dedicated IAM user ensures security and controlled access to AWS services like S3.
+
+**Steps to Create an IAM User**
+
+**1. Navigate to IAM Service**
+
+1. Sign in to the AWS Management Console.
+2. Click on the **Services** tab.
+3. Search for **IAM** (Identity and Access Management) and select it.
+
+**2. Add a New User**
+
+1. In the IAM dashboard, go to the **Users** section on the left panel.
+2. Click on the **Add user** button.
+3. Enter a **User name** (e.g., `my-iam-user`).
+4. Select **Programmatic access** to allow access via API, CLI, and SDK.
+5. Click **Next: Permissions**.
+
+![Image](images/create_a_user_iam.png)
+
+**3. Assign Permissions**
+
+1. Select **Attach existing policies directly**.
+2. Search for `S3`.
+3. For testing purposes, select **AmazonS3FullAccess** (Note: In real environments, restrict access to only required resources).
+4. Click **Next: Tags** then Click **Next: Review** 
+
+![Image](images/create_a_user_iam_0.png)
+
+5. Click **Create User**.
+![Image](images/create_a_user_iam_1.png)
+
+**4. Retrieve Access Credentials**
+
+1. After user creation, you will see an **Access Key ID** and **Secret Access Key**.
+2. Click **Download .csv** to save these credentials securely.
+
+![Image](images/create_a_user_iam_2.png)   
+
+![Image](images/create_a_user_iam_3.png)
 
 <div align="right">
   <strong>
