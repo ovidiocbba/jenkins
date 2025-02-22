@@ -26,7 +26,7 @@
   - [2. Install MySQL Client and AWS CLI](#2-install-mysql-client-and-aws-cli)
   - [3. Create a MySQL Database](#3-create-a-mysql-database)
   - [4. Creating an S3 Bucket on AWS](#4-creating-an-s3-bucket-on-aws)
-- [5. Create a user (IAM) for AWS authentication](#5-create-a-user-iam-for-aws-authentication)
+  - [5. Create a user (IAM) for AWS authentication](#5-create-a-user-iam-for-aws-authentication)
 
 
 ## Section 1: Resources for this course
@@ -1562,12 +1562,14 @@ Amazon Simple **Storage Service** (Amazon S3) is an **object storage service** t
   </strong>
 </div>
 
-## 5. Create a user (IAM) for AWS authentication
+### 5. Create a user (IAM) for AWS authentication
 
 **What is IAM?**
+
 AWS Identity and Access Management (IAM) is a service that helps you securely control access to AWS resources. It allows you to create and manage users, assign permissions, and enforce security policies.
 
 **Why Create an IAM User?**
+
 To upload backups to AWS, we need to authenticate using IAM credentials. Creating a dedicated IAM user ensures security and controlled access to AWS services like S3.
 
 **Steps to Create an IAM User**
