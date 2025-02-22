@@ -1547,14 +1547,22 @@ Amazon Simple **Storage Service** (Amazon S3) is an **object storage service** t
 
 **3. Create a New S3 Bucket**
 1. Click on the **Create bucket** button.
+  
+![Image](images/creating_an_s3_bucket_1.png)
+
 2. Enter a unique bucket name (e.g., `jenkins-mysql-backup`).
 3. Click on the **Create** button to finalize the bucket creation.
+
+![Image](images/creating_an_s3_bucket_2.png)
+![Image](images/creating_an_s3_bucket_3.png)
 
 **4. Uploading Files to S3 (Manually - Optional)**
 1. Click on your newly created bucket.
 2. Click on the **Upload** button.
 3. Select the files you want to upload.
 4. Click **Upload** to store them in the cloud.
+
+![Image](images/creating_an_s3_bucket_4.png)
 
 <div align="right">
   <strong>
