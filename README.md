@@ -27,6 +27,7 @@
   - [3. Create a MySQL Database](#3-create-a-mysql-database)
   - [4. Creating an S3 Bucket on AWS](#4-creating-an-s3-bucket-on-aws)
   - [5. Create a user (IAM) for AWS authentication](#5-create-a-user-iam-for-aws-authentication)
+  - [6. Learn how to take a backup and upload it manually to S3](#6-learn-how-to-take-a-backup-and-upload-it-manually-to-s3)
 
 
 ## Section 1: Resources for this course
@@ -1618,6 +1619,87 @@ To upload backups to AWS, we need to authenticate using IAM credentials. Creatin
 ![Image](images/create_a_user_iam_2.png)   
 
 ![Image](images/create_a_user_iam_3.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 6. Learn how to take a backup and upload it manually to S3
+
+This guide explains how to manually create a MySQL backup and upload it to AWS S3 using the credentials created in a previous step. The process involves:
+- Creating a MySQL backup using `mysqldump`
+- Configuring AWS CLI authentication
+- Uploading the backup to an S3 bucket
+
+**Prerequisites**
+- A running MySQL container
+- AWS IAM credentials (Access Key ID and Secret Key)
+- AWS CLI installed
+- An existing S3 bucket
+
+**1. Taking a MySQL Backup Manually**
+
+**Checking Running Containers**
+Run the following command to see active containers:
+```sh
+docker ps
+```
+Identify the container where MySQL is running. The backup will be taken from this container.
+
+**Logging into the Remote-Host Container**
+
+`remote-host`: container
+
+```sh
+docker exec -it remote-host /bin/sh
+```
+
+**Running the MySQL Dump Command**
+```sh
+mysqldump -u root -h dh_host -p test_db > /tmp/db.sql
+```
+Enter the MySQL root password when prompted.
+```sh
+1234
+```
+
+**Verifying the Backup**
+```sh
+cat /tmp/db.sql
+```
+Ensure the backup file contains the expected database content.
+
+![Image](images/backup_and_upload_it_manually_to_s3_1.png)
+
+**2. Configuring AWS CLI for Authentication**
+
+**Setting Environment Variables**
+![Image](images/backup_and_upload_it_manually_to_s3_2.png)
+Set **AWS authentication credentials** using **environment variables**:
+```sh
+export AWS_ACCESS_KEY_ID=<your-access-key-id>
+export AWS_SECRET_ACCESS_KEY=<your-secret-access-key>
+```
+![Image](images/backup_and_upload_it_manually_to_s3_3.png)
+
+**3. Uploading the Backup to S3**
+
+**Using AWS CLI to Upload the File**
+
+**`s3-bucket-name`**: jenkins-mysql-backup
+```sh
+aws s3 cp /tmp/db.sql s3://jenkins-mysql-backup/db.sql
+```
+![Image](images/backup_and_upload_it_manually_to_s3_4.png)
+
+**Verifying the Upload**
+1. Navigate to the AWS S3 console.
+2. Open the specified bucket.
+3. Confirm that `db.sql` appears in the bucket.
+
+![Image](images/backup_and_upload_it_manually_to_s3_5.png)
 
 <div align="right">
   <strong>
