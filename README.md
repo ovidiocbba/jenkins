@@ -25,6 +25,7 @@
   - [1. Create a MySQL server on Docker](#1-create-a-mysql-server-on-docker)
   - [2. Install MySQL Client and AWS CLI](#2-install-mysql-client-and-aws-cli)
   - [3. Create a MySQL Database](#3-create-a-mysql-database)
+  - [4. Creating an S3 Bucket on AWS](#4-creating-an-s3-bucket-on-aws)
 
 
 ## Section 1: Resources for this course
@@ -1510,6 +1511,49 @@ MySQL [testdb]> select * from info;
 +---------+----------+------+
 1 row in set (0.01 sec)
 ```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 4. Creating an S3 Bucket on AWS
+
+**What is Amazon S3?**
+
+Amazon Simple **Storage Service** (Amazon S3) is an **object storage service** that provides scalable, high-speed, web-based cloud storage. It is commonly used for:
+- Storing and **backing up data**.
+- **Hosting static** websites.
+- **Storing log files**, analytics, and big data processing.
+- Serving media content (**images, videos**, etc.).
+- Disaster recovery and data archiving.
+
+**Prerequisites**
+- An AWS account (If you do not have one, sign up at [AWS Console](https://aws.amazon.com/console/)).
+- A valid credit card is required for account registration, but no charges will be applied unless resources are actively used.
+
+**Steps to Create an S3 Bucket**
+
+**1. Sign in to AWS Console**
+1. Open your browser and search for "**AWS Console**" on Google.
+2. Click on the official `AWS Console` link.
+3. Click on **Sign in** and enter your AWS credentials.
+
+**2. Navigate to the S3 Service**
+1. Once signed in, click on the **Services** tab in the top navigation bar.
+2. In the search bar, type "`S3`" and select the **S3** service.
+
+**3. Create a New S3 Bucket**
+1. Click on the **Create bucket** button.
+2. Enter a unique bucket name (e.g., `jenkins-mysql-backup`).
+3. Click on the **Create** button to finalize the bucket creation.
+
+**4. Uploading Files to S3 (Manually - Optional)**
+1. Click on your newly created bucket.
+2. Click on the **Upload** button.
+3. Select the files you want to upload.
+4. Click **Upload** to store them in the cloud.
 
 <div align="right">
   <strong>
