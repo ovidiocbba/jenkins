@@ -35,6 +35,8 @@
   - [2. Allow users to sign up](#2-allow-users-to-sign-up)
   - [3. Install a powerful security plugin](#3-install-a-powerful-security-plugin)
   - [4. Ever heard about roles? Let's create a Read Only role!](#4-ever-heard-about-roles-lets-create-a-read-only-role)
+  - [5. Create a role to execute jobs, and assign that role to your user](#5-create-a-role-to-execute-jobs-and-assign-that-role-to-your-user)
+  - [6. Learn how to restrict Jobs to users using Project Roles](#6-learn-how-to-restrict-jobs-to-users-using-project-roles)
 
 
 ## Section 1: Resources for this course
@@ -2100,7 +2102,7 @@ This guide will walk you through the process of creating a **Read-Only Role** in
   </strong>
 </div>
 
-# 5. Create a role to execute jobs, and assign that role to your user
+### 5. Create a role to execute jobs, and assign that role to your user
 
 This guide explains how to create a **Build Role** in Jenkins that allows users to execute jobs while restricting their ability to create, delete, or modify jobs.
 
@@ -2152,7 +2154,7 @@ This guide explains how to create a **Build Role** in Jenkins that allows users 
   </strong>
 </div>
 
-# 6. Learn how to restrict Jobs to users using Project Roles
+### 6. Learn how to restrict Jobs to users using Project Roles
 
 This guide explains how to restrict certain users to specific jobs in Jenkins using **Project Roles**. A Project Role allows administrators to **grant permissions based on patterns**, ensuring users can only access jobs that match predefined criteria.
 
