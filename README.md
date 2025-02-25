@@ -37,6 +37,10 @@
   - [4. Ever heard about roles? Let's create a Read Only role!](#4-ever-heard-about-roles-lets-create-a-read-only-role)
   - [5. Create a role to execute jobs, and assign that role to your user](#5-create-a-role-to-execute-jobs-and-assign-that-role-to-your-user)
   - [6. Learn how to restrict Jobs to users using Project Roles](#6-learn-how-to-restrict-jobs-to-users-using-project-roles)
+- [Section 8: Jenkins Tips \& Tricks](#section-8-jenkins-tips--tricks)
+  - [1. Global environment variables in Jenkins](#1-global-environment-variables-in-jenkins)
+  - [Steps:](#steps)
+  - [Console Output Example:](#console-output-example)
 
 
 ## Section 1: Resources for this course
@@ -2231,6 +2235,62 @@ This guide explains how to restrict certain users to specific jobs in Jenkins us
 
    - Test access to backup-related jobs.
    ![images](images/creating_a_project_role_9.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 8: Jenkins Tips & Tricks
+
+### 1. Global environment variables in Jenkins
+
+This guide explains the global environment variables available in Jenkins by default and how to use them in your jobs.
+
+**Viewing Available Environment Variables**
+
+To find the list of available environment variables:
+1. Go to Google and search for **Jenkins Environment Variables Wiki**.
+2. Look for the official Jenkins documentation on environment variables.
+3. There, you will find a table listing all the available variables.
+
+https://wiki.jenkins.io/JENKINS/Building+a+software+project
+
+
+**Example: Using Environment Variables in a Jenkins Job**
+
+Let's create a simple Jenkins freestyle job that prints environment variables.
+
+### Steps:
+1. **Create a new job**: Name it `ENV` and select **Freestyle project**.
+2. **Add a build step**:
+   - Choose **Execute shell**.
+   - Add the following script:
+     ```bash
+     echo "BUILD NUMBER FOR THIS $BUILD_NUMBER"
+     echo "BUILD ID IS $BUILD_ID"
+     echo "BUILD URL IS $BUILD_URL"
+     echo "JOB NAME IS $JOB_NAME"
+     ```
+3. **Save and build the job**.
+![images](images/global_environment_variables_1.png)
+
+### Console Output Example:
+After running the job, check the console output to see the values:
+```
+BUILD NUMBER FOR THIS 1
+BUILD ID IS 1
+BUILD URL IS http://your-jenkins-server/job/ENV/1/
+JOB NAME IS ENV
+```
+![images](images/global_environment_variables_1.png)
+
+**Use Cases**
+
+- **Notifications**: Use these variables in emails or Slack messages to report job status.
+- **Logging**: Include them in logs to track executions.
+- **Conditional Execution**: Use them in scripts to handle different scenarios.
 
 <div align="right">
   <strong>
