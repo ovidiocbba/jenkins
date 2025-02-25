@@ -39,8 +39,7 @@
   - [6. Learn how to restrict Jobs to users using Project Roles](#6-learn-how-to-restrict-jobs-to-users-using-project-roles)
 - [Section 8: Jenkins Tips \& Tricks](#section-8-jenkins-tips--tricks)
   - [1. Global environment variables in Jenkins](#1-global-environment-variables-in-jenkins)
-  - [Steps:](#steps)
-  - [Console Output Example:](#console-output-example)
+  - [2. Create your own custom global environment variables](#2-create-your-own-custom-global-environment-variables)
 
 
 ## Section 1: Resources for this course
@@ -2262,7 +2261,8 @@ https://wiki.jenkins.io/JENKINS/Building+a+software+project
 
 Let's create a simple Jenkins freestyle job that prints environment variables.
 
-### Steps:
+**Steps:**
+
 1. **Create a new job**: Name it `ENV` and select **Freestyle project**.
 2. **Add a build step**:
    - Choose **Execute shell**.
@@ -2276,7 +2276,8 @@ Let's create a simple Jenkins freestyle job that prints environment variables.
 3. **Save and build the job**.
 ![images](images/global_environment_variables_1.png)
 
-### Console Output Example:
+**Console Output Example:**
+
 After running the job, check the console output to see the values:
 ```
 BUILD NUMBER FOR THIS 1
@@ -2291,6 +2292,55 @@ JOB NAME IS ENV
 - **Notifications**: Use these variables in emails or Slack messages to report job status.
 - **Logging**: Include them in logs to track executions.
 - **Conditional Execution**: Use them in scripts to handle different scenarios.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Create your own custom global environment variables
+
+In this guide, you'll learn how to create your own global environment variables in Jenkins. By default, Jenkins provides built-in environment variables such as execution number, job name, and build URL. However, **you may need to define custom global variables** to be used across all jobs.
+
+**Steps to Create Custom Global Environment Variables**
+
+1. **Navigate to Manage Jenkins**
+   - Open Jenkins and go to **Manage Jenkins > Configure System**.
+   - Scroll down and look for the **Global Properties** section.
+   - Check the box for **Environment Variables**.
+   - Click on the **Add** button to create new variables.
+   - Example variables:
+     - `NAME_OF_COURSE = Jenkins-course`
+     - `COUNTRY = Colombia`
+   - Click **Save** to apply the new environment variables.
+
+![images](images/custom_global_environment_variables_1.png)
+
+**Using Custom Environment Variables in a Job**
+
+1. **Modify an Existing Job**
+   - Open the job where you want to use the variables.
+   - Click on **Configure**.
+   - Add an **Execute Shell** step and use `echo` to print the variables:
+     
+   ```bash
+   echo "$NAME_OF_COURSE"
+   echo "$COUNTRY"
+   ```
+
+    ![images](images/custom_global_environment_variables_2.png)
+
+   - Click **Save**.
+   - Click **Build Now** to execute the job.
+    ![images](images/custom_global_environment_variables_3.png)
+
+**Why Use Custom Global Environment Variables?**
+
+- Store **common configuration values** like server names or API keys.
+- Avoid hardcoding values in multiple jobs.
+- Ensure consistency across Jenkins pipelines.
+- Simplify maintenance and updates.
 
 <div align="right">
   <strong>
