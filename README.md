@@ -2338,9 +2338,9 @@ In this guide, you'll learn how to create your own global environment variables 
 **Why Use Custom Global Environment Variables?**
 
 - Store **common configuration values** like server names or API keys.
-- Avoid hardcoding values in multiple jobs.
+- **Avoid hardcoding** values in multiple jobs.
 - Ensure consistency across Jenkins pipelines.
-- Simplify maintenance and updates.
+- Simplify **maintenance and updates.**
 
 <div align="right">
   <strong>
