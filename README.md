@@ -34,6 +34,7 @@
   - [1. Intro - Learn how to Enable/Disable Login in Jenkins](#1-intro---learn-how-to-enabledisable-login-in-jenkins)
   - [2. Allow users to sign up](#2-allow-users-to-sign-up)
   - [3. Install a powerful security plugin](#3-install-a-powerful-security-plugin)
+  - [4. Ever heard about roles? Let's create a Read Only role!](#4-ever-heard-about-roles-lets-create-a-read-only-role)
 
 
 ## Section 1: Resources for this course
@@ -2026,3 +2027,75 @@ This guide explains how to manually create users in Jenkins when sign-up is disa
   </strong>
 </div>
 
+### 4. Ever heard about roles? Let's create a Read Only role!
+
+This guide will walk you through the process of creating a **Read-Only Role** in Jenkins. Roles in Jenkins define the permissions a user has within the system. By following these steps, you will successfully create a role with read-only permissions.
+
+**Prerequisites**
+- A running instance of **Jenkins**
+- Administrator access to **Manage Jenkins** settings
+- **At least one user account** without assigned roles (e.g., `Ricardo` or `Tom`)
+
+**Steps to Create a Read-Only Role**
+
+**1. Open Jenkins Management Panel**
+1. Log in to **Jenkins** with **an administrator account**.
+2. Navigate to **Manage Jenkins**.
+3. Scroll down and select **Manage and Assign Roles**.
+
+![Image](images/create_a_read_only_role.png)
+
+**2. Manage Roles**
+1. Click on **Manage Roles**.
+2. Locate the existing roles; you should see an **admin** role with full permissions.
+
+![Image](images/create_a_read_only_role_1.png)
+
+**3. Add a New Role**
+1. Click on the **Add** button to create a new role.
+2. Enter **a name for the role,** such as `read-only`.
+3. **Select the permissions** for this role:
+   - Check only **Read** **permissions**.
+   - Ensure that **the role does not have permissions** to `administer, create, delete, or update` **configurations**.
+
+![Image](images/create_a_read_only_role_2.png)
+
+**4. Save the Role**
+1. Scroll down and click **Save**.
+2. The new **Read-Only Role** is now created.
+
+**5. Assign the Role to Users**
+1. Navigate to **Assign Roles**.
+2. Locate the users (e.g., `Ricardo`, `Tom`) who need `read-only` access.
+3. Assign them the **Read-Only Role**.
+4. Click **Save** to apply changes.
+
+![Image](images/create_a_read_only_role_3.png)
+
+**Verification**
+- Open an **Incognito Tab** and try logging in as a user with the new role.
+- Ensure that the user can only read content and does not have permissions to modify Jenkins configurations.
+
+**6. Modify Role Permissions for Job Viewing**
+
+1. Return to **Manage Jenkins** > **Manage and Assign Roles**.
+2. Click on **Manage Roles**.
+3. Locate the **Read-Only Role**.
+4. Under the **Job** section, check the **Read permission**.
+5. Click **Save**.
+
+![Image](images/create_a_read_only_role_4.png)
+
+**7. Confirm Job Visibility**
+
+1. Open the **Incognito Tab** and refresh Jenkins.
+2. `tom` should now see the list of jobs but not modify them.
+3. Clicking on a **job** will confirm that **no delete**, **configure**, **or build** options `are available`.
+
+![Image](images/create_a_read_only_role_5.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
