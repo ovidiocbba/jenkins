@@ -30,6 +30,10 @@
   - [6. Learn how to take a backup and upload it manually to S3](#6-learn-how-to-take-a-backup-and-upload-it-manually-to-s3)
   - [7. Automate the backup and upload process with a shell script](#7-automate-the-backup-and-upload-process-with-a-shell-script)
   - [8. Learn how to manage sensitive information in Jenkins (Keys, Passwords)](#8-learn-how-to-manage-sensitive-information-in-jenkins-keys-passwords)
+- [Section 7: Jenkins \& Security](#section-7-jenkins--security)
+  - [1. Intro - Learn how to Enable/Disable Login in Jenkins](#1-intro---learn-how-to-enabledisable-login-in-jenkins)
+  - [2. Allow users to sign up](#2-allow-users-to-sign-up)
+  - [3. Install a powerful security plugin](#3-install-a-powerful-security-plugin)
 
 
 ## Section 1: Resources for this course
@@ -1826,3 +1830,199 @@ To properly manage this data, we will use Jenkins Credentials to store and acces
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
   </strong>
 </div>
+
+## Section 7: Jenkins & Security
+
+### 1. Intro - Learn how to Enable/Disable Login in Jenkins
+
+Learn how to enable or disable login security in Jenkins to control authentication and access to jobs.
+
+**Overview**
+
+Security is a crucial aspect of Jenkins, especially for enterprises and applications. Controlling access to Jenkins ensures that only authorized users can manage jobs and configurations.
+
+By default, Jenkins requires users to log in with a username and password. However, it is possible to disable login security, which allows unrestricted access to Jenkins. This guide will show you how to enable and disable login security in Jenkins.
+
+**Steps to Disable Login Security**
+
+1. Open **Manage Jenkins**.
+2. Navigate to **Configure Global Security**.
+3. Uncheck **Enable security**.
+4. Click **Save**.
+![Image](images/disable_login_in_jenkins.png)
+5. Open an incognito window and go to `jenkins.local`.
+6. You will notice that Jenkins no longer requires login credentials.
+
+**⚠ Warning**
+
+Disabling security allows anyone with access to the Jenkins server to perform any action, including deleting jobs and modifying configurations. This is **not recommended** for production environments.
+
+**Steps to Enable Login Security**
+
+1. Open **Manage Jenkins**.
+2. Go to **Configure Global Security**.
+3. Check **Enable security**.
+4. Select **Jenkins database** for authentication.
+5. Ensure that **Logged-in users can do anything** is selected.
+6. Click **Save**.
+
+![Image](images/enable_login_in_jenkins.png)
+
+7. Open an incognito window and visit `jenkins.local`.
+8. Jenkins will now require login credentials.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Allow users to sign up
+
+This guide explains how to allow users to register themselves in Jenkins. By enabling this option, users will see a **Sign up** option on the login screen.
+
+**Steps to Enable User Sign Up**
+
+1. Open **Manage Jenkins**.
+2. Navigate to **Configure Global Security**.
+3. Under **Security Realm**, check **Allow users to sign up**.
+4. Click **Save**.
+
+![Image](images/allow_users_to_sign_up_1.png)
+
+5. Open an incognito window and go to `jenkins.local`.
+6. You will now see an option to **Sign up** and create a new account.
+
+![Image](images/allow_users_to_sign_up_2.png)
+
+**Creating a New Account**
+
+1. Click **Sign up**.
+2. Enter the following details:
+   - **Username**
+   - **Full Name**
+   - **Email Address**
+   - **Password**
+3. Click **Create an account**.
+4. The new account will be created and, by default, assigned **admin** privileges.
+
+![Image](images/allow_users_to_sign_up_3.png)
+
+**⚠ Security Warning**
+
+By default, new accounts created this way have **admin privileges**, which means they can:
+- **Access** all jobs
+- **Delete** projects
+- **Modify** configurations
+
+If your Jenkins server is publicly accessible, unauthorized users can create accounts and gain full control over your system.
+
+**Steps to Disable User Sign Up**
+
+1. Open **Manage Jenkins**.
+2. Go to **Configure Global Security**.
+3. Uncheck **Allow users to sign up**.
+4. Click **Save**.
+
+![Image](images/allow_users_to_sign_up_4.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 3. Install a powerful security plugin
+
+Jenkins provides security features by default, but additional plugins can enhance its capabilities. This guide explains how to install and configure the **Role-based Authorization Strategy** plugin for better security management.
+
+**Steps to Install the Security Plugin**
+
+1. Open **Manage Jenkins**.
+2. Navigate to **Manage Plugins**.
+3. Click on the **Available Plugins** tab.
+4. Use the filter box to search for **Role-based Authorization Strategy**.
+5. Select the plugin and click **Download without restart**.
+6. Click **Restart Jenkins when installation is complete**.
+7. Wait for the installation to finish.
+
+![Image](images/security_plugin_1.png)
+
+**Verify Installation**
+
+1. Go to **Manage Jenkins**.
+2. Open **Manage Plugins**.
+3. Switch to the **Installed** tab.
+4. Search for **Role-based Authorization Strategy** to confirm its installation.
+
+![Image](images/security_plugin_2.png)
+
+**Configure the Plugin**
+
+1. Go to **Manage Jenkins**.
+2. Open **Configure Global Security**.
+3. Under **Authorization**, select **Role-based Strategy**.
+4. Click **Save**.
+
+![Image](images/security_plugin_3.png)
+
+5. After saving, a new section called **Manage and Assign Roles** will appear.
+
+![Image](images/security_plugin_4.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+**6. Create users manually in the Jenkins DB**
+
+This guide explains how to manually create users in Jenkins when sign-up is disabled.
+
+**Steps to Create a User Manually**
+
+1. **Go to Manage Jenkins**
+   - Navigate to `Manage Jenkins`.
+   - Scroll down to `Manage Users`.
+
+![Images](images/create_users_manually_1.png)
+
+2. **Create a New User**
+   - Click `Create User`.
+
+     ![Images](images/create_users_manually_2.png)
+
+   - Fill in the details:
+     - Username: `tom`
+     - Password: `1234`
+     - Full Name: `Tom`
+     - Email: `tom@tom.com`
+   - Click `Create User`.
+
+     ![Images](images/create_users_manually_3.png)
+
+3. **Verify the User in the Database**
+   - The new user should appear under `Manage Users`.
+   - It will indicate that the user is stored in `Jenkins' own database`.
+
+4. **Test the New User Login**
+   - Open an incognito browser tab.
+   - Go to `jenkins.local`.
+   - Log in with `tom` and password `1234`.
+   - Notice that access **is denied**.
+
+5. **Understanding User Restrictions**
+   - Unlike users created via sign-up, manually created users have no permissions by default.
+   - **This is due** to the `Role-based Authorization Strategy plugin`.
+
+6. **Granting User Permissions**
+   - Go to `Manage Jenkins` > `Configure Global Security`.
+   - Assign roles and permissions to allow the user to perform specific actions.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
