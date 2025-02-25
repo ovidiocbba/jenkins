@@ -2099,3 +2099,139 @@ This guide will walk you through the process of creating a **Read-Only Role** in
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
   </strong>
 </div>
+
+# 5. Create a role to execute jobs, and assign that role to your user
+
+This guide explains how to create a **Build Role** in Jenkins that allows users to execute jobs while restricting their ability to create, delete, or modify jobs.
+
+**Prerequisites**
+- A **Jenkins** instance with role-based authorization configured
+- Administrator access to **Manage Jenkins**
+- At least one user account (e.g., `Ricardo` or `Tom`)
+
+**Steps to Create and Assign a Build Role**
+
+**1. Navigate to Manage Roles**
+1. Log in to **Jenkins** with an administrator account.
+2. Go to **Manage Jenkins**.
+3. Scroll down and select **Manage and Assign Roles**.
+4. Click on **Manage Roles**.
+
+**2. Create a New Execution Role**
+1. Click **Add** to create a new role.
+2. Enter a name for the role, such as `execution`.
+3. Ensure that the **Overall Read** permission is checked to prevent access errors.
+
+![images](images/create_a_role_to_execute_jobs_1.png)
+
+4. Navigate to the **Jobs** section.
+5. Check **Read** and **Build** permissions.
+6. Click **Save**.
+
+![images](images/create_a_role_to_execute_jobs_2.png)
+
+**3. Assign the Execution Role to a User**
+1. Click on **Assign Roles**.
+2. Locate the user (e.g., `Tom`).
+3. Assign the **Execution Role** to the user.
+4. Click **Save**.
+
+![images](images/create_a_role_to_execute_jobs_3.png)
+
+**4. Verify Role Assignment**
+1. Open an **Incognito Tab**.
+2. Navigate to `jenkins.local` and log in as `Tom`.
+3. Go to any job and check if the **Build with Parameters** button is available.
+4. Click **Build** and confirm that the job executes successfully.
+
+![images](images/create_a_role_to_execute_jobs_4.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+# 6. Learn how to restrict Jobs to users using Project Roles
+
+This guide explains how to restrict certain users to specific jobs in Jenkins using **Project Roles**. A Project Role allows administrators to **grant permissions based on patterns**, ensuring users can only access jobs that match predefined criteria.
+
+**Creating a Project Role**
+
+1. **Navigate to Role Management**
+   - Go to `Manage Jenkins`.
+   - Click on `Manage and Assign Roles`.
+   - Select `Manage Roles`.
+
+2. **Create a Global Role for Developers**
+   - Enter the name of the new role (e.g., `dev`).
+   - Click `Add`.
+   - Assign the `Overall Read` permission to enable login.
+   - Save the changes.
+
+![images](images/creating_a_project_role_1.png)
+
+3. **Define a Project Role**
+   - In the `Project Roles` section, enter a new role name (e.g., `Ansible`).
+   - Set a pattern (e.g., `Ansible-.*`) to match job names.
+   - Click `Add`.
+
+![images](images/creating_a_project_role_2.png)
+
+   - Assign permissions such as:
+     - `Read`: Allow viewing jobs.
+     - `Build`: Allow executing jobs.
+   - Save the changes.
+
+![images](images/creating_a_project_role_3.png)
+
+**Assigning Project Roles to Users**
+
+1. **Navigate to Assign Roles**
+   - Go to `Manage Jenkins` > `Manage and Assign Roles` > `Assign Roles`.
+   - Ensure the user has the `dev` global role (for login access).
+
+![images](images/creating_a_project_role_4.png)
+
+2. **Bind Users to Project Roles**
+   - Under `Item Roles`, find the created role (e.g., `Ansible`).
+   - Add the user (e.g., `Tom`).
+   - Assign the project role to the user.
+   - Save the changes.
+
+![images](images/creating_a_project_role_5.png)
+
+**Testing Role Restrictions**
+1. Open an incognito tab and log in as the user (`Tom`).
+2. Verify that the user can:
+   - See only jobs starting with "`Ansible`".
+   - **Execute** jobs if the `Build` **permission is assigned**.
+3. Ensure that unauthorized jobs are not visible.
+
+![images](images/creating_a_project_role_6.png)
+
+**Expanding Access to Additional Jobs**
+1. **Create Another Project Role**
+   - Navigate to `Manage Roles`.
+   - Add a new role (e.g., `Backup`).
+   - Set the pattern to `Backup-.*`.
+   - Assign appropriate permissions.
+   - Save the changes.
+
+![images](images/creating_a_project_role_7.png)
+
+1. **Assign the New Role to the User**
+   - Go to `Assign Roles`.
+   - Bind the user to the `Backup` role.
+   - Save the changes.
+   
+   ![images](images/creating_a_project_role_8.png)
+
+   - Test access to backup-related jobs.
+   ![images](images/creating_a_project_role_9.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
