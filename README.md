@@ -47,6 +47,7 @@
   - [7.Trigger your Jobs from Bash Scripts (With Parameters)](#7trigger-your-jobs-from-bash-scripts-with-parameters)
 - [Section 9: Jenkins \& Email](#section-9-jenkins--email)
   - [1.Install a Mail Plugin](#1install-a-mail-plugin)
+  - [2. Integrating Jenkins with AWS Simple Email Service (SES)](#2-integrating-jenkins-with-aws-simple-email-service-ses)
 
 
 ## Section 1: Resources for this course
@@ -2671,6 +2672,86 @@ Run the script to trigger the job:
       - Search for `Mailer`
       - If found, select it and install the plugin
  
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Integrating Jenkins with AWS Simple Email Service (SES)
+
+In this guide, we will learn how to integrate **AWS Simple Email Service (SES)** with Jenkins.
+
+**Prerequisites**
+
+- A Jenkins instance already set up
+- An AWS account
+
+**Steps to Integrate Jenkins with AWS SES**
+
+**1. Log in to AWS and Access SES**
+
+- Sign in to your AWS account: https://aws.amazon.com/console/
+- Click on the **Services** tab and search for **SES (Simple Email Service)**.
+- Click on **SES** to access the service.
+
+![images](images/jenkins_email_2.png)
+
+![images](images/jenkins_email_3.png)
+
+**2. Verify a Domain or Email Address**
+- To send emails, AWS SES requires verification of a `domain` or `an email address`.
+- You can verify:
+  - A domain, if available.
+  - An email address, if you don’t have a domain.
+- Click on **Verify a new email address**.
+- Enter your email and click **Verify**.
+
+![images](images/jenkins_email_4.png)
+
+- Check your email for a verification message from AWS and **click on the provided link**.
+- Refresh the AWS SES console to **confirm verification**.
+
+![images](images/jenkins_email_5.png)
+
+**3. Configure Jenkins for Email Notifications**
+- In Jenkins, navigate to **Manage Jenkins** > **Configure System**.
+- Scroll down to **Email Notification**.
+- Click **Advanced** and locate the **SMTP Server** field.
+- Retrieve the `SMTP server details` from `AWS SES`:
+  - In AWS SES, go to **SMTP Settings**.
+  - Copy the **SMTP server name** and paste it into Jenkins.
+![images](images/jenkins_email_6.png)
+
+
+**4. Set Up SMTP Authentication**
+- Enable **Use SMTP Authentication**.
+- Create SMTP credentials in AWS SES:
+  - Click on **Create SMTP Credentials**.
+  - Enter a name (e.g., `jenkins-test-mail`), then click on **Create** button and download credentials.
+![images](images/jenkins_email_7.png)
+  - Copy the **username** and **password** and paste them into Jenkins.
+![images](images/jenkins_email_8.png)
+
+**5. Configure Connection Security and Ports**
+- Enable **Use SSL**.
+- Retrieve available SMTP ports from AWS SES.
+- Use **Port 465** and enter it in Jenkins.
+- Set a **Reply-To Address** (your verified email).
+
+![images](images/jenkins_email_9.png)
+
+**6. Test Configuration**
+- Ensure the **System Admin Email** field contains your verified email.
+- Scroll down and test the configuration by sending a test email.
+- Check your email inbox (or spam folder) for the test email.
+- If blocked, mark it as **Not Spam**.
+
+**7. Troubleshooting**
+- Ensure your machine can access **Port 465**.
+- If the email is not received, `check` **your spam folder**.
+- If using an office network, confirm that the port is not blocked.
+
 <div align="right">
   <strong>
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
