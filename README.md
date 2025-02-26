@@ -47,7 +47,7 @@
   - [7.Trigger your Jobs from Bash Scripts (With Parameters)](#7trigger-your-jobs-from-bash-scripts-with-parameters)
 - [Section 9: Jenkins \& Email](#section-9-jenkins--email)
   - [1.Install a Mail Plugin](#1install-a-mail-plugin)
-  - [2. Integrating Jenkins with AWS Simple Email Service (SES)](#2-integrating-jenkins-with-aws-simple-email-service-ses)
+  - [2. Integrate Jenkins and AWS Simple Email Service](#2-integrate-jenkins-and-aws-simple-email-service)
   - [3. Integrate Jenkins and Gmail](#3-integrate-jenkins-and-gmail)
 
 
@@ -2679,7 +2679,7 @@ Run the script to trigger the job:
   </strong>
 </div>
 
-### 2. Integrating Jenkins with AWS Simple Email Service (SES)
+### 2. Integrate Jenkins and AWS Simple Email Service
 
 In this guide, we will learn how to integrate **AWS Simple Email Service (SES)** with Jenkins.
 
