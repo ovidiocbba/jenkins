@@ -45,6 +45,8 @@
   - [5. Troubleshooting: Githooks throwing 403 forbidden errors?](#5-troubleshooting-githooks-throwing-403-forbidden-errors)
   - [6.Trigger your Jobs from Bash Scripts (No parameters)](#6trigger-your-jobs-from-bash-scripts-no-parameters)
   - [7.Trigger your Jobs from Bash Scripts (With Parameters)](#7trigger-your-jobs-from-bash-scripts-with-parameters)
+- [Section 9: Jenkins \& Email](#section-9-jenkins--email)
+  - [1.Install a Mail Plugin](#1install-a-mail-plugin)
 
 
 ## Section 1: Resources for this course
@@ -2643,6 +2645,32 @@ Run the script to trigger the job:
    chmod +x crumb.sh
    ```
 
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 9: Jenkins & Email
+
+### 1.Install a Mail Plugin
+1. **Check if the Mailer Plugin is Already Installed**
+    - When setting up Jenkins, if you selected **Install suggested plugins**, the Mailer plugin might already be installed.
+    - To verify this, navigate to:
+      - **Manage Jenkins** > **Manage Plugins**
+      - Go to the **Installed** tab
+      - Search for `Mailer`
+      - If it appears in the list, **the plugin is already installed**.
+
+![images](images/jenkins_email_1.png)
+
+2. **Install the Mailer Plugin**
+    - If the plugin is not found in the **Installed** section:
+      - Go to **Manage Jenkins** > **Manage Plugins**
+      - Open the **Available** tab
+      - Search for `Mailer`
+      - If found, select it and install the plugin
+ 
 <div align="right">
   <strong>
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
