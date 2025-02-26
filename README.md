@@ -44,6 +44,7 @@
   - [4. Meet the Jenkins' cron: Learn how to execute Jobs automatically](#4-meet-the-jenkins-cron-learn-how-to-execute-jobs-automatically)
   - [5. Troubleshooting: Githooks throwing 403 forbidden errors?](#5-troubleshooting-githooks-throwing-403-forbidden-errors)
   - [6.Trigger your Jobs from Bash Scripts (No parameters)](#6trigger-your-jobs-from-bash-scripts-no-parameters)
+  - [7.Trigger your Jobs from Bash Scripts (With Parameters)](#7trigger-your-jobs-from-bash-scripts-with-parameters)
 
 
 ## Section 1: Resources for this course
@@ -2613,6 +2614,34 @@ Run the script to trigger the job:
 
 **After**
 ![images](images/trigger_your_jobs_9.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 7.Trigger your Jobs from Bash Scripts (With Parameters)
+
+1. Create a new script file or reuse:
+   ```bash
+   nano crumb.sh
+   ```
+2. Add the following content:
+   ```bash
+   #!/bin/bash
+   
+   # Retrieve the Jenkins crumb for CSRF protection
+   crumb=$(curl -u "jenkins:1234" -s 'http://jenkins.local:8080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+
+   # Trigger a Jenkins job using the retrieved crumb
+   curl -u "jenkins:1234" -H "$crumb" -X POST  http://jenkins.local:8080/job/backup-to-aws/buildWithParameters?MYSQL_HOST=db_host&DATABASE_NAME=testdb&AWS_BUCKET_NAME=jenkins-mysql-backup
+   ```
+3. Save and exit (`CTRL+X`, then `Y`, then `ENTER`).
+4. Grant execution permissions:
+   ```bash
+   chmod +x crumb.sh
+   ```
 
 <div align="right">
   <strong>
