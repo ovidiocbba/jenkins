@@ -2794,6 +2794,8 @@ In this guide, we will learn how to integrate **AWS Simple Email Service (SES)**
 - Click **Test Configuration** to send a test email.
 - Check your inbox to confirm that the email was sent successfully.
 
+![images](images/jenkins_and_gmail_3.png)
+
 **4. Troubleshooting**
 - Ensure that **Less secure app access** is enabled in your Gmail account.
 - Verify that your ISP or office network does not block **Port 465**.
@@ -2804,3 +2806,4 @@ In this guide, we will learn how to integrate **AWS Simple Email Service (SES)**
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
   </strong>
 </div>
+
