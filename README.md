@@ -50,6 +50,8 @@
   - [2. Integrate Jenkins and AWS Simple Email Service](#2-integrate-jenkins-and-aws-simple-email-service)
   - [3. Integrate Jenkins and Gmail](#3-integrate-jenkins-and-gmail)
   - [4. Integrating Email Notifications into Jenkins Jobs](#4-integrating-email-notifications-into-jenkins-jobs)
+- [Section 10: Jenkins \& Maven](#section-10-jenkins--maven)
+  - [1. Install the Maven Plugin](#1-install-the-maven-plugin)
 
 
 ## Section 1: Resources for this course
@@ -2854,6 +2856,25 @@ In this guide, we will learn how to integrate **AWS Simple Email Service (SES)**
 - Check your spam folder if you do not receive the notification.
 
 This setup allows you to monitor job failures efficiently, ensuring you are notified promptly when an issue occurs.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 10: Jenkins & Maven
+
+### 1. Install the Maven Plugin
+
+1. Navigate to **Manage Jenkins** > **Manage Plugins**.
+2. Go to the `Available Plugins` tab and search for `Maven`.
+3. Select **Maven Integration Plugin**, then click **Install** without restart.
+
+![imagen](images/jenkins_maven_1.png)
+
+4. Once installed, restart Jenkins.
+5. Verify installation in **Manage Plugins** > Installed by searching for **Maven**.
 
 <div align="right">
   <strong>
