@@ -42,6 +42,7 @@
   - [2. Create your own custom global environment variables](#2-create-your-own-custom-global-environment-variables)
   - [3. Modify the Jenkins URL](#3-modify-the-jenkins-url)
   - [4. Meet the Jenkins' cron: Learn how to execute Jobs automatically](#4-meet-the-jenkins-cron-learn-how-to-execute-jobs-automatically)
+  - [5. Troubleshooting: Githooks throwing 403 forbidden errors?](#5-troubleshooting-githooks-throwing-403-forbidden-errors)
 
 
 ## Section 1: Resources for this course
@@ -2463,6 +2464,40 @@ This means:
 - `*` → Every month
 - `*` → Every day of the week
 
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 5. Troubleshooting: Githooks throwing 403 forbidden errors?
+
+There's a chance your githooks won't trigger correctly with 403 erros. This is due to a jenkins major upgrade, which modified something called CSRF in Jenkins, that protects you against DOS attacks.
+
+Info:
+
+https://jenkins.io/doc/upgrade-guide/2.176/#SECURITY-626
+
+Resolution:
+
+* Install a plugin named Strict Crumb Issue
+
+* Go to Manage Jenkins -> Configure Global Security -> CSRF Protection.
+
+* Select Strict Crumb Issuer.
+
+* Click on Advanced.
+
+* Uncheck the Check the session ID box.
+
+* Save it.
+
+It should look like this:
+
+![images](images/csrf_in_jenkins.png)
+
+You can also check this question in the QA space, which is very informative: 8273042 
 
 <div align="right">
   <strong>
