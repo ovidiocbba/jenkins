@@ -49,6 +49,7 @@
   - [1.Install a Mail Plugin](#1install-a-mail-plugin)
   - [2. Integrate Jenkins and AWS Simple Email Service](#2-integrate-jenkins-and-aws-simple-email-service)
   - [3. Integrate Jenkins and Gmail](#3-integrate-jenkins-and-gmail)
+  - [4. Integrating Email Notifications into Jenkins Jobs](#4-integrating-email-notifications-into-jenkins-jobs)
 
 
 ## Section 1: Resources for this course
@@ -2807,3 +2808,55 @@ In this guide, we will learn how to integrate **AWS Simple Email Service (SES)**
   </strong>
 </div>
 
+### 4. Integrating Email Notifications into Jenkins Jobs
+
+**Step 1: Access Job Configuration**
+1. Navigate to **Jenkins Dashboard**.
+2. Open the **job** (e.g., `ENV` job) for which you want to enable email notifications.
+3. Click on **Configure**.
+4. Scroll down to the **Post-build Actions** section.
+
+**Step 2: Add Email Notifications**
+1. Click on **Add post-build action**.
+2. Select **Email Notification**.
+3. In the configuration panel:
+   - Check **Send email for every unstable build**.
+   - Check **Send emails to individuals who broke the build**.
+   - Enter the recipient email address in the **Recipient List**.
+
+![image](images/email_notifications_1.png)
+
+**Step 3: Test Email Notification on Failure**
+1. Modify the build to force a failure:
+   - Add an invalid command such as `echo1` (**a non-existent command**).
+   - Save the configuration.
+![image](images/email_notifications_2.png)
+2. Run the build.
+3. The build should fail, triggering an email notification.
+
+![image](images/email_notifications_3.png)
+
+4. Check your inbox for a Jenkins notification email indicating the failure.
+
+![image](images/email_notifications_4.png)
+
+**Step 4: Restore the Job to Normal**
+1. Remove the `invalid command` from the job configuration.
+2. Save the job and execute it again.
+3. The build should succeed, and Jenkins will send a **recovery notification** indicating that the job is back to normal.
+4. If the job runs successfully afterward, no further notifications will be sent.
+
+![image](images/email_notifications_5.png)
+
+**Key Takeaways**
+- Jenkins sends notifications for failures and recoveries but not for successful builds.
+- Ensure the **SMTP settings** are correctly configured in Jenkins to enable email notifications.
+- Check your spam folder if you do not receive the notification.
+
+This setup allows you to monitor job failures efficiently, ensuring you are notified promptly when an issue occurs.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
