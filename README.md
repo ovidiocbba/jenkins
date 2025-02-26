@@ -40,6 +40,8 @@
 - [Section 8: Jenkins Tips \& Tricks](#section-8-jenkins-tips--tricks)
   - [1. Global environment variables in Jenkins](#1-global-environment-variables-in-jenkins)
   - [2. Create your own custom global environment variables](#2-create-your-own-custom-global-environment-variables)
+  - [3. Modify the Jenkins URL](#3-modify-the-jenkins-url)
+  - [4. Meet the Jenkins' cron: Learn how to execute Jobs automatically](#4-meet-the-jenkins-cron-learn-how-to-execute-jobs-automatically)
 
 
 ## Section 1: Resources for this course
@@ -2341,6 +2343,126 @@ In this guide, you'll learn how to create your own global environment variables 
 - **Avoid hardcoding** values in multiple jobs.
 - Ensure consistency across Jenkins pipelines.
 - Simplify **maintenance and updates.**
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 3. Modify the Jenkins URL
+ 
+This guide explains how to **modify the Jenkins URL** `to use a DNS instead of an IP address`. This is essential for ensuring that Jenkins can be accessed using a proper domain name rather than an IP address, which might change over time.
+
+**Steps to Modify the Jenkins URL**
+ 
+1. Open Jenkins and go to `Manage Jenkins`.
+2. Click on `Configure System`.
+3. Scroll down to the `Jenkins Location` section.
+4. Locate the `Jenkins URL` field.
+5. By default, the field may contain an IP address.
+6. Change the `Jenkins URL` field to your desired domain, such as:
+   ```
+   http://jenkins.local:8080/
+   ```
+7. **Save Changes**
+8. Click `Save` to apply the new settings.
+9. Navigate back to `Manage Jenkins` to verify that the error has been resolved.
+
+**Configure the Local DNS (Windows)**
+
+Since `jenkins.local` is **not a real domain**, you need to configure your system to recognize it:
+
+1. Open **Notepad** as Administrator.
+2. Click `File` > `Open` and navigate to:
+   ```
+   C:\Windows\System32\drivers\etc\hosts
+   ```
+3. Select "All Files" in the file type dropdown and open the `hosts` file.
+4. Add the following line at the **end of the file**:
+   ```
+   127.0.0.1   jenkins.local
+   ```
+5. Save the file and close Notepad.
+
+**Restart Jenkins (Docker)**
+
+If you are running Jenkins in a Docker container, restart it to apply the changes:
+
+- If running with `docker run`:
+  ```sh
+  docker restart <jenkins_container_name>
+  ```
+- If running with `docker-compose`:
+  ```sh
+  docker-compose restart jenkins
+  ```
+
+**Access Jenkins with the New URL**
+1. Open a web browser.
+2. Navigate to `http://jenkins.local:8080/`.
+3. Jenkins should now be accessible with the new URL.
+
+**Benefits of Using a DNS for Jenkins**
+
+- **Easier Access**: Users can access Jenkins using a domain name instead of an IP.
+- **Consistency**: The URL remains the same even if the server's IP changes.
+- **Better Integration**: Some plugins and integrations may require a proper DNS.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 4. Meet the Jenkins' cron: Learn how to execute Jobs automatically
+
+**Why Use Cron in Jenkins?**
+
+If you have **a job that needs to run at a specific time**, such as a daily backup at 1:00 AM, you don't want to manually trigger it. Instead, you can configure Jenkins to run the job automatically **using a cron expression.**
+
+**Configuring a Cron Job in Jenkins**
+
+**Step 1: Navigate to Job Configuration**
+1. Open **Jenkins** in your browser.
+2. Select `the job` you want to schedule.
+3. Click **Configure**.
+
+**Step 2: Enable Build Triggers**
+1. Scroll down to the **Build Triggers** section.
+2. Check the **Build periodically** option.
+3. Enter a cron expression in the provided field.
+
+![image](images/execute_jobs_automatically_1.png)
+
+**Step 3: Save and Verify**
+1. Click **Save**.
+2. Check the **Next execution time** displayed by Jenkins.
+3. Wait for the job to run automatically.
+
+**Step 4: Verify Execution**
+1. Navigate to **Build History**.
+2. Click on a build.
+3. Open **Console Output**.
+4. Look for `Started by timer`, confirming automatic execution.
+
+**Understanding Cron Expressions**
+Jenkins uses a five-field cron syntax:
+```
+MINUTE HOUR DAY_OF_MONTH MONTH DAY_OF_WEEK
+```
+
+For example, to schedule a job at 1:00 AM every day:
+```
+0 1 * * *
+```
+This means:
+- `0` → At the 0th minute (start of the hour)
+- `1` → At 1 AM
+- `*` → Every day of the month
+- `*` → Every month
+- `*` → Every day of the week
+
 
 <div align="right">
   <strong>
