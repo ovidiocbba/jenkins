@@ -48,6 +48,7 @@
 - [Section 9: Jenkins \& Email](#section-9-jenkins--email)
   - [1.Install a Mail Plugin](#1install-a-mail-plugin)
   - [2. Integrating Jenkins with AWS Simple Email Service (SES)](#2-integrating-jenkins-with-aws-simple-email-service-ses)
+  - [3. Integrate Jenkins and Gmail](#3-integrate-jenkins-and-gmail)
 
 
 ## Section 1: Resources for this course
@@ -2751,6 +2752,52 @@ In this guide, we will learn how to integrate **AWS Simple Email Service (SES)**
 - Ensure your machine can access **Port 465**.
 - If the email is not received, `check` **your spam folder**.
 - If using an office network, confirm that the port is not blocked.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 3. Integrate Jenkins and Gmail
+
+**Prerequisites**
+
+- A Jenkins instance already set up
+- A Gmail account
+
+**Steps to Integrate Jenkins with Gmail**
+
+**1. Configure SMTP Settings in Jenkins**
+- Navigate to **Manage Jenkins** > **Configure System**.
+- Locate the **SMTP Configuration** section.
+- Use the following settings:
+  - **SMTP Server:** `smtp.gmail.com`
+  - **Use SMTP Authentication:** Enabled
+  - **Username:** Your Gmail email address
+  - **Password:** Your Gmail account password
+  - **Use SSL:** Enabled
+  - **SMTP Port:** `465`
+
+![images](images/jenkins_and_gmail_1.png)
+
+**2. Enable Less Secure Apps in Gmail**
+- Go to [Google Account Security](https://myaccount.google.com/security).
+- Scroll down to **Less secure app access**.
+- Enable the option to allow less secure apps to access your Gmail account.
+
+![images](images/jenkins_and_gmail_2.png)
+
+**3. Test Configuration**
+- In Jenkins, scroll down to the **Test Configuration** section.
+- Enter your email address in the recipient field.
+- Click **Test Configuration** to send a test email.
+- Check your inbox to confirm that the email was sent successfully.
+
+**4. Troubleshooting**
+- Ensure that **Less secure app access** is enabled in your Gmail account.
+- Verify that your ISP or office network does not block **Port 465**.
+- Check the spam folder if the test email does not appear in your inbox.
 
 <div align="right">
   <strong>
