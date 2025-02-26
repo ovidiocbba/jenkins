@@ -43,6 +43,7 @@
   - [3. Modify the Jenkins URL](#3-modify-the-jenkins-url)
   - [4. Meet the Jenkins' cron: Learn how to execute Jobs automatically](#4-meet-the-jenkins-cron-learn-how-to-execute-jobs-automatically)
   - [5. Troubleshooting: Githooks throwing 403 forbidden errors?](#5-troubleshooting-githooks-throwing-403-forbidden-errors)
+  - [6.Trigger your Jobs from Bash Scripts (No parameters)](#6trigger-your-jobs-from-bash-scripts-no-parameters)
 
 
 ## Section 1: Resources for this course
@@ -2498,6 +2499,120 @@ It should look like this:
 ![images](images/csrf_in_jenkins.png)
 
 You can also check this question in the QA space, which is very informative: 8273042 
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 6.Trigger your Jobs from Bash Scripts (No parameters)
+
+This guide explains how to `trigger a Jenkins job` from a script when the job does **not** require parameters.
+
+**Steps to Trigger a Job**
+
+**1. Copy the Job Execution URL**
+
+1. Open **Jenkins** and navigate to the **job** you want to trigger.
+2. Click on **Build Now**.
+3. Right-click on the button and select **Copy Link Address**.
+4. Paste the URL into a text editor – this is the job execution endpoint.
+
+**Example**   
+```shell
+http://localhost:8080/job/<name_job>/build?delay=0sec
+```
+
+**2. Enable CSRF Protection & Generate a Crumb**
+
+Jenkins requires a security **crumb token** to prevent **Cross-Site Request Forgery **(CSRF) attacks. To retrieve it:
+
+1. Go to **Manage Jenkins** → **Configure Global Security**.
+2. Scroll down to **CSRF Protection**.
+3. Ensure it is enabled.
+
+![images](images/trigger_your_jobs_1.png)
+
+5. Generate a crumb using the following command:
+
+```bash
+CRUMB=$(curl -s -u "jenkins_user:your_password" "http://your-jenkins-server/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)")
+echo "Crumb: $CRUMB"
+```
+
+This saves the crumb into a variable that **will be used for authentication**.
+
+**3. Set Up Hostname Resolution (Optional)**
+If your system does not recognize `jenkins.local`, add it to `/etc/hosts`:
+
+```bash
+sudo vi /etc/hosts
+```
+![images](images/trigger_your_jobs_2.png)
+
+Add the following line:
+
+```
+127.0.0.1    jenkins.local
+```
+![images](images/trigger_your_jobs_3.png)
+
+Save and exit.
+
+```
+curl jenkins.local:8080
+```
+![images](images/trigger_your_jobs_4.png)
+
+![images](images/trigger_your_jobs_5.png)
+
+![images](images/trigger_your_jobs_6.png)
+
+**4. Create the Bash Script**
+
+1. Create a new script file:
+   ```bash
+   nano crumb.sh
+   ```
+2. Add the following content:
+   ```bash
+   #!/bin/bash
+   
+   # Retrieve the Jenkins crumb for CSRF protection
+   crumb=$(curl -u "jenkins:1234" -s 'http://jenkins.local:8080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+
+   # Trigger a Jenkins job using the retrieved crumb
+   curl -u "jenkins:1234" -H "$crumb" -X POST "http://jenkins.local:8080/job/ENV/build?delay=0sec"
+   ```
+
+![images](images/trigger_your_jobs_7.png)
+
+3. Save and exit (`CTRL+X`, then `Y`, then `ENTER`).
+4. Grant execution permissions:
+   ```bash
+   chmod +x crumb.sh
+   ```
+
+**5. Execute the Script**
+
+Run the script to trigger the job:
+
+```bash
+./crumb.sh
+```
+
+**6. Verify the Execution**
+
+1. Open Jenkins and navigate to your job.
+2. Check if **a new build has started**.
+3. Open the **Console Output** of the job to confirm execution.
+
+**Before**
+![images](images/trigger_your_jobs_8.png)
+
+**After**
+![images](images/trigger_your_jobs_9.png)
 
 <div align="right">
   <strong>
