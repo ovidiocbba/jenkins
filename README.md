@@ -63,6 +63,7 @@
 - [Section 11: Jenkins \& GIT](#section-11-jenkins--git)
   - [1. Create a Git Server using Docker](#1-create-a-git-server-using-docker)
   - [2. Create your first Git Repository](#2-create-your-first-git-repository)
+  - [3. Create a Git User to Interact with Your Repository](#3-create-a-git-user-to-interact-with-your-repository)
 
 
 ## Section 1: Resources for this course
@@ -3409,6 +3410,69 @@ Now that you have a group, you can create projects (repositories) under it.
 - You can also create multiple groups for better organization.
 
 ![image](images/create_your_first_git_repository_5.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 3. Create a Git User to Interact with Your Repository
+
+**Creating a New User**
+1. **Access the Admin Area**
+   - Navigate to the GitLab **Admin Area**.
+   ```
+   http://localhost:8090/admin/users
+   ```
+   - Click on **Users**.
+   - Click on **New User**.
+
+![image](images/create_a_git_user_1.png)
+
+2. **Fill in User Details**
+   - Enter the **name** (e.g., `Ricardo`).
+   - Enter a **username**.
+   - Provide an **email address** (can be a fake email for now).
+   - Scroll down and ensure the user is set as a **regular user**.
+   - Click on **Create User**.
+
+![image](images/create_a_git_user_2.png)
+
+3. **Set a Password for the User**
+   - Edit the newly created user.
+   - Set a password with at least **8 characters** (e.g., `1234567812345678`).
+   - Click **Save Changes**.
+
+![image](images/create_a_git_user_3.png)
+![image](images/create_a_git_user_4.png)
+
+**Granting Repository Access to the User**
+1. **Navigate to the Project**
+   - Go to **Projects**.
+   - Select the **Maven** project (created under the `Jenkins` group).
+
+![image](images/create_a_git_user_5.png)
+```
+http://localhost:8090/admin/projects/jenkins/maven
+```
+
+2. **Manage Access**
+   - Click on **Manage Access** (or **Project Members**).
+   - Search for the user (`Ricardo`).
+   - Assign **Maintainer** role (to allow branch creation and avoid permission errors).
+   - Click **Add to Project**.
+
+![image](images/create_a_git_user_6.png)
+![image](images/create_a_git_user_7.png)
+
+3. **Verify Permissions**
+   - Go to the **Maven** project.
+   - Click on **Settings** > **Members**.
+   - Confirm that `Ricardo` has been added with the correct permissions.
+![image](images/create_a_git_user_8.png)
 
 <div align="right">
   <strong>
