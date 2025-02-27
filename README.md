@@ -54,6 +54,7 @@
   - [1. Install the Maven Plugin](#1-install-the-maven-plugin)
   - [2. Install the GIT Plugin](#2-install-the-git-plugin)
   - [3. Learn how to clone a GIT/GITHUB repository from Jenkins](#3-learn-how-to-clone-a-gitgithub-repository-from-jenkins)
+  - [4. Learn how to build a JAR using maven](#4-learn-how-to-build-a-jar-using-maven)
 
 
 ## Section 1: Resources for this course
@@ -2950,6 +2951,57 @@ To see the hidden files.
    ```sh
    ls -la
    ```
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 4. Learn how to build a JAR using maven
+**Prerequisites**
+- Jenkins installed and running.
+- **Maven plugin** installed in Jenkins.
+- A **Git repository** containing **a Maven project**.
+
+**Step 1: Configure Maven in Jenkins**
+1. Navigate to **Manage Jenkins > Global Tool Configuration**.
+2. Locate the **Maven** section and click **Add Maven**.
+3. Provide a name (e.g., `jenkins-maven`).
+4. Select the **latest Maven version**. (e.g: `3.9.2`)
+5. Click **Save**.
+
+![imagen](images/build_a_jar_using_maven_1.png)
+
+**Step 2: Configure the Jenkins Job**
+1. Open the existing **maven-job** or create a new one.
+2. Navigate to **Configure**.
+3. In the **Build** section, add a new build step:
+   - Select **Invoke top-level Maven targets**.
+   - Choose the Maven version configured earlier.
+   - In the **Goals** field, enter:
+     ```sh
+     -B -DskipTests clean package
+     ```
+4. Click **Save**.
+
+![imagen](images/build_a_jar_using_maven_2.png)
+
+**Step 3: Run the Job**
+1. Click **Build Now** to start the job.
+2. Navigate to **Build History > Console Output** to monitor progress.
+3. Jenkins will:
+   - Clone the latest version of the Git repository.
+   - Download required Maven dependencies (only on the first run).
+   - Build the JAR file.
+![imagen](images/build_a_jar_using_maven_3.png)
+
+**Step 4: Locate the Built JAR**
+- The resulting JAR file is stored in the **workspace**:
+  ```sh
+  workspace/maven-job/target/
+  ```
+- Navigate to the **target** directory to find the generated JAR.
 
 <div align="right">
   <strong>
