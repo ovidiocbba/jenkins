@@ -56,6 +56,7 @@
   - [3. Learn how to clone a GIT/GITHUB repository from Jenkins](#3-learn-how-to-clone-a-gitgithub-repository-from-jenkins)
   - [4. Learn how to build a JAR using maven](#4-learn-how-to-build-a-jar-using-maven)
   - [5. Learn how to test your code](#5-learn-how-to-test-your-code)
+  - [6. Deploying Your JAR Locally](#6-deploying-your-jar-locally)
 
 
 ## Section 1: Resources for this course
@@ -3028,6 +3029,45 @@ To see the hidden files.
 ![imagen](images/test_your_code_2.png)
 ![imagen](images/test_your_code_3.png)
 
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 6. Deploying Your JAR Locally
+ 
+Before deploying, ensure your application passes all tests. If a test fails, the job should stop, preventing the deployment of a faulty JAR.
+
+**1. Add a Shell Step in Jenkins**
+1. Navigate to **Configure** for the Jenkins job.
+2. Add a new **Build Step**.
+3. Select **Execute Shell**.
+4. Enter the following commands:
+
+```sh
+echo "******** Deploying JAR ********"
+java -jar /var/jenkins_home/workspace/maven-job/target/my-app-1.0-SNAPSHOT.jar
+echo "Deployment completed."
+```
+5. Save the configuration.
+
+![imagen](images/deploying_your_jar_1.png)
+
+**2. Execute the Job**
+1. Click **Build Now**.
+2. Navigate to the console output to verify the deployment.
+
+**3. Validate Deployment**
+If successful, the console output should display:
+
+```sh
+Hello World!
+```
+![imagen](images/deploying_your_jar_2.png)
+
+This confirms the JAR was executed successfully within the Jenkins container.
 
 <div align="right">
   <strong>
