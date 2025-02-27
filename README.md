@@ -60,6 +60,8 @@
   - [7. Display the result of your tests using a graph](#7-display-the-result-of-your-tests-using-a-graph)
   - [8. Archive the last successful artifact](#8-archive-the-last-successful-artifact)
   - [9. Send Email notifications about the status of your maven project](#9-send-email-notifications-about-the-status-of-your-maven-project)
+- [Section 11: Jenkins \& GIT](#section-11-jenkins--git)
+  - [1. Create a Git Server using Docker](#1-create-a-git-server-using-docker)
 
 
 ## Section 1: Resources for this course
@@ -3193,6 +3195,169 @@ The graph provides a visual representation of test trends over time, highlightin
 - **Real-time Alerts:** Get notified immediately **when a build fails.**
 - **Efficient Debugging:** Email contains logs and error details to quickly identify issues.
 - **Automated Monitoring:** No need to manually check Jenkins dashboard.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+## Section 11: Jenkins & GIT
+### 1. Create a Git Server using Docker
+
+**Prerequisites**
+- A virtual machine with at least **2 CPU cores** and **4GB RAM** (8GB+ recommended for better performance)
+- **Docker** and **Docker Compose** installed
+- **Access to modify the hosts file** on your local machine
+
+**Step 1: Adjust Virtual Machine Resources**
+
+Before running the GitLab container, ensure your virtual machine has sufficient resources:
+
+1. Power off your virtual machine.
+2. Open VirtualBox settings:
+   - Navigate to **System → Base Memory** and assign **at least 4GB RAM** (8GB+ recommended).
+   - Navigate to **System → Processor** and assign **at least 2 cores**.
+3. Start the virtual machine and verify the configuration:
+   ```sh
+   cat /proc/cpuinfo | grep cores  # Should show at least 2 cores
+   free -h  # Should show the assigned RAM
+   ```
+![images](images/git_server_1.png)
+
+**Step 2: Create a GitLab Service Using Docker Compose**
+
+1. Navigate to your Jenkins data folder at the same level as your `docker-compose.yml` file.
+2. Search for the **official GitLab Docker image**:
+   ```sh
+   google "Docker GitLab"
+   ```
+3. Copy the **Docker Compose configuration** from the official documentation.
+
+```sh
+https://docs.gitlab.com/install/docker/installation/#install-gitlab-by-using-docker-compose
+```
+
+5. Open your `docker-compose.yml` file (`jenkins_git`) and add the following service:
+   ```yaml
+    services:
+      jenkins:
+        container_name: jenkins
+        image: jenkins/jenkins:lts
+        ports:
+          - "8080:8080"
+        volumes:
+          - jenkins_home_data:/var/jenkins_home # Persist Jenkins data (configs, plugins, jobs)
+        networks:
+          - net # Define a custom Docker network
+      remote_host:
+        container_name: remote-host
+        image: remote-host
+        build:
+          context: . # Define the build context ('Dockerfile' should be inside the 'centos7' directory)
+        networks:
+          - net
+      db_host:
+        container_name: db
+        image: mysql:5.7
+        environment:
+          # Set the root password for MySQL
+          MYSQL_ROOT_PASSWORD: "1234"  
+        volumes:
+          - db_data:/var/lib/mysql
+        networks:
+          - net
+
+      git:
+        container_name: git-server
+        image: 'gitlab/gitlab-ce:latest'
+        hostname: 'gitlab.example.com'
+        ports:
+          - '8090:80'
+        volumes:
+          - '/srv/gitlab/config:/etc/gitlab'
+          - '/srv/gitlab/logs:/var/log/gitlab'
+          - '/srv/gitlab/data:/var/opt/gitlab'
+        networks:
+          - net
+
+    networks:
+      net: # Define a custom Docker network to enable communication between containers
+
+    # These volumes (jenkins_home_data and db_data) 
+    # are managed by Docker and stored in its volume system
+    volumes:
+      jenkins_home_data: 
+      db_data:
+   ```
+
+6. Save the file and start the GitLab server:
+   ```sh
+   docker-compose up -d
+   ```
+
+![images](images/git_server_2.png)
+
+**Step 3: Monitor the GitLab Server Startup**
+
+GitLab takes a few minutes to initialize:
+`docker ps`: Verify the container is running
+
+```sh
+docker ps
+```
+![images](images/git_server_3.png)
+
+`docker logs -f git-server`: Monitor startup logs
+```sh
+docker logs -f git-server
+```
+Wait until you see a message similar to:
+```
+ Chef Client finished...
+ GitLab Reconfigured.
+```
+This indicates the server is ready.
+
+![images](images/git_server_4.png)
+
+**Step 4: Configure DNS to Access GitLab**
+To access GitLab from a browser, update the **hosts file** on your local machine:
+
+1. Open Notepad **as Administrator**.
+2. Navigate to:
+   ```
+   C:\Windows\System32\drivers\etc\hosts
+   ```
+3. Add the following entry (replace `<VM_IP>` with your virtual machine's IP):
+   ```
+   <VM_IP> gitlab.example.com
+   ```
+4. Save the file.
+
+![images](images/git_server_5.png)
+
+**Step 5: Access GitLab from the Browser**
+1. Open a web browser and go to:
+   ```
+   http://gitlab.example.com:8090
+   ```
+   or
+   ```
+   http://localhost:8090/
+   ```
+2. You will be prompted to set a new **root** password (minimum 8 characters).
+3. Log in using:
+   - **Username**: `root`
+   - **Password**: The one you just set
+4. Click **Sign In**.
+
+Or
+1. Use this command to set the root user:
+```
+docker exec -it git-server gitlab-rake "gitlab:password:reset"
+```
+![images](images/git_server_6.png)
 
 <div align="right">
   <strong>
