@@ -2946,6 +2946,11 @@ https://github.com/jenkins-docs/simple-java-maven-app
 
 ![imagen](images/clone_git_repository_5.png)
 
+To see the hidden files.
+   ```sh
+   ls -la
+   ```
+
 <div align="right">
   <strong>
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
