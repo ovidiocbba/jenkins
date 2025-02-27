@@ -55,6 +55,7 @@
   - [2. Install the GIT Plugin](#2-install-the-git-plugin)
   - [3. Learn how to clone a GIT/GITHUB repository from Jenkins](#3-learn-how-to-clone-a-gitgithub-repository-from-jenkins)
   - [4. Learn how to build a JAR using maven](#4-learn-how-to-build-a-jar-using-maven)
+  - [5. Learn how to test your code](#5-learn-how-to-test-your-code)
 
 
 ## Section 1: Resources for this course
@@ -2994,6 +2995,7 @@ To see the hidden files.
    - Clone the latest version of the Git repository.
    - Download required Maven dependencies (only on the first run).
    - Build the JAR file.
+
 ![imagen](images/build_a_jar_using_maven_3.png)
 
 **Step 4: Locate the Built JAR**
@@ -3002,6 +3004,30 @@ To see the hidden files.
   workspace/maven-job/target/
   ```
 - Navigate to the **target** directory to find the generated JAR.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 5. Learn how to test your code
+
+1. Open the existing **maven-job**.
+2. Navigate to **Configure**.
+3. In the **Build** section, add **a new build step**:
+   - Select **Invoke top-level Maven targets**.
+   - Choose the Maven version configured earlier.
+   - In the **Goals** field, enter:
+     ```sh
+     test
+     ```
+4. Click **Save**.
+
+![imagen](images/test_your_code_1.png)
+![imagen](images/test_your_code_2.png)
+![imagen](images/test_your_code_3.png)
+
 
 <div align="right">
   <strong>
