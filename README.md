@@ -58,6 +58,7 @@
   - [5. Learn how to test your code](#5-learn-how-to-test-your-code)
   - [6. Deploying Your JAR Locally](#6-deploying-your-jar-locally)
   - [7. Display the result of your tests using a graph](#7-display-the-result-of-your-tests-using-a-graph)
+  - [8. Archive the last successful artifact](#8-archive-the-last-successful-artifact)
 
 
 ## Section 1: Resources for this course
@@ -3113,6 +3114,35 @@ target/surefire-reports/*.xml
 ![images](images/tests_using_a_graph_4.png)
 
 The graph provides a visual representation of test trends over time, highlighting errors in red if they occur.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 8. Archive the last successful artifact
+
+1. **Locate the JAR File:**
+   - The JAR file is generated in `target/`.
+   - Example: `target/app.jar`
+
+2. **Configure Jenkins to Archive Artifacts:**
+   - Go to **Post-Build Actions** → **Archive the Artifacts**.
+   - Specify the artifact path:
+     ```
+     target/*.jar
+     ```
+   - Click on **Advanced** and select **Archive only if build is successful**.
+   - Save and trigger a new build.
+
+![images](images/archive_artifact_1.png)
+
+3. **Verify Archived Artifacts:**
+   - After `a successful build`, go to the Jenkins job page.
+   - The **Last Successful Artifact** section will appear with a downloadable link to the JAR file.
+ 
+![images](images/archive_artifact_2.png)
 
 <div align="right">
   <strong>
