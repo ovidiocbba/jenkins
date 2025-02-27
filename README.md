@@ -59,6 +59,7 @@
   - [6. Deploying Your JAR Locally](#6-deploying-your-jar-locally)
   - [7. Display the result of your tests using a graph](#7-display-the-result-of-your-tests-using-a-graph)
   - [8. Archive the last successful artifact](#8-archive-the-last-successful-artifact)
+  - [9. Send Email notifications about the status of your maven project](#9-send-email-notifications-about-the-status-of-your-maven-project)
 
 
 ## Section 1: Resources for this course
@@ -3143,6 +3144,55 @@ The graph provides a visual representation of test trends over time, highlightin
    - The **Last Successful Artifact** section will appear with a downloadable link to the JAR file.
  
 ![images](images/archive_artifact_2.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 9. Send Email notifications about the status of your maven project
+
+**Prerequisites**
+- A Jenkins instance running
+- A configured Maven project in Jenkins
+- An SMTP server set up in Jenkins for sending emails
+
+**Steps to Configure Email Notifications**
+
+**1. Configure Email Notifications in Jenkins**
+1. Open Jenkins and navigate to your Maven project.
+2. Click on **Configure**.
+3. Scroll down to the **Post-build Actions** section.
+4. Click on **Add post-build action** and select **Email Notification**.
+5. Enter the recipient email address.
+6. Select the options:
+   - **Send email for every unstable build**
+   - **Send separate emails to individuals who broke the build** (optional)
+7. Click **Save**.
+
+![images](images/send_email_notifications_1.png)
+
+**2. Trigger a Failure to Test Email Notifications**
+1. Modify the project to introduce an intentional error (e.g., an incorrect parameter in the build step).
+2. Click **Build Now**.
+3. The build will fail, and Jenkins will send an email notification with the error details.
+4. Check your email inbox for the notification.
+
+![images](images/send_email_notifications_2.png)
+
+**3. Fix the Issue and Validate Successful Notification**
+1. Remove the introduced error from the configuration.
+2. Click **Build Now** again.
+3. The build should now complete successfully.
+4. Jenkins will send another email notifying that the build is back to normal.
+
+![images](images/send_email_notifications_3.png)
+
+**Benefits of Email Notifications**
+- **Real-time Alerts:** Get notified immediately **when a build fails.**
+- **Efficient Debugging:** Email contains logs and error details to quickly identify issues.
+- **Automated Monitoring:** No need to manually check Jenkins dashboard.
 
 <div align="right">
   <strong>
