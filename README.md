@@ -62,6 +62,7 @@
   - [9. Send Email notifications about the status of your maven project](#9-send-email-notifications-about-the-status-of-your-maven-project)
 - [Section 11: Jenkins \& GIT](#section-11-jenkins--git)
   - [1. Create a Git Server using Docker](#1-create-a-git-server-using-docker)
+  - [2. Create your first Git Repository](#2-create-your-first-git-repository)
 
 
 ## Section 1: Resources for this course
@@ -3364,3 +3365,55 @@ docker exec -it git-server gitlab-rake "gitlab:password:reset"
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
   </strong>
 </div>
+
+---
+
+### 2. Create your first Git Repository
+
+**1. Create a Group**
+
+GitLab **groups** help organize multiple projects under a common namespace.
+
+1. **Go to GitLab** and navigate to the **Groups** section.
+2. Click on **Create Group**.
+3. Enter a **name** for your group (e.g., `jenkins`).
+4. GitLab will generate a URL for the group automatically.
+5. Choose a **visibility level**:
+   - **Private** (Only members can access)
+   - **Internal** (Accessible to logged-in users)
+   - **Public** (Accessible to everyone)
+6. Select **Private** for now.
+7. Click **Create Group**.
+
+![image](images/create_your_first_git_repository_1.png)
+![image](images/create_your_first_git_repository_2.png)
+![image](images/create_your_first_git_repository_3.png)
+
+**2. Create a Repository (Project)**
+
+Now that you have a group, you can create projects (repositories) under it.
+
+1. Inside your group, click on **New Project**.
+2. Choose a **project name** (e.g., `maven`).
+3. The URL will be generated as `jenkins/maven`.
+4. Set the visibility level to **Private**.
+5. Click **Create Project**.
+
+![image](images/create_your_first_git_repository_4.png)
+
+**3. Understanding GitLab Groups and Projects**
+
+- The **group** (e.g., `jenkins`) serves as a container for multiple projects.
+- The **repository** (e.g., `maven`) is a project under that group.
+- You can create multiple projects within a group.
+- You can also create multiple groups for better organization.
+
+![image](images/create_your_first_git_repository_5.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
