@@ -57,6 +57,7 @@
   - [4. Learn how to build a JAR using maven](#4-learn-how-to-build-a-jar-using-maven)
   - [5. Learn how to test your code](#5-learn-how-to-test-your-code)
   - [6. Deploying Your JAR Locally](#6-deploying-your-jar-locally)
+  - [7. Display the result of your tests using a graph](#7-display-the-result-of-your-tests-using-a-graph)
 
 
 ## Section 1: Resources for this course
@@ -3068,6 +3069,50 @@ Hello World!
 ![imagen](images/deploying_your_jar_2.png)
 
 This confirms the JAR was executed successfully within the Jenkins container.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 7. Display the result of your tests using a graph
+
+**1. Locate the Test Report**
+
+Maven generates a test report in an XML file stored in:
+
+![images](images/tests_using_a_graph_1.png)
+```
+target/surefire-reports/*.xml
+```
+
+This XML contains detailed test results.
+
+![images](images/tests_using_a_graph_2.png)
+
+**2. Configure Jenkins to Publish Test Reports**
+
+1. Navigate to **Configure** for the Jenkins job.
+2. Add a **Post-Build Action**.
+3. Select **Publish JUnit Test Report**.
+4. Enter the following path in the report configuration:
+```
+target/surefire-reports/*.xml
+```
+5. Save the configuration.
+
+![images](images/tests_using_a_graph_3.png)
+
+**3. Generate the Test Results Graph**
+
+1. Execute the job multiple times (at least five runs).
+2. Go to the **Job Dashboard** in Jenkins.
+3. Observe the **Test Result Trend** graph appearing.
+
+![images](images/tests_using_a_graph_4.png)
+
+The graph provides a visual representation of test trends over time, highlighting errors in red if they occur.
 
 <div align="right">
   <strong>
