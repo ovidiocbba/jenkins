@@ -52,6 +52,8 @@
   - [4. Integrating Email Notifications into Jenkins Jobs](#4-integrating-email-notifications-into-jenkins-jobs)
 - [Section 10: Jenkins \& Maven](#section-10-jenkins--maven)
   - [1. Install the Maven Plugin](#1-install-the-maven-plugin)
+  - [2. Install the GIT Plugin](#2-install-the-git-plugin)
+  - [3. Learn how to clone a GIT/GITHUB repository from Jenkins](#3-learn-how-to-clone-a-gitgithub-repository-from-jenkins)
 
 
 ## Section 1: Resources for this course
@@ -2875,6 +2877,74 @@ This setup allows you to monitor job failures efficiently, ensuring you are noti
 
 4. Once installed, restart Jenkins.
 5. Verify installation in **Manage Plugins** > Installed by searching for **Maven**.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 2. Install the GIT Plugin
+
+1. Go to **Manage Jenkins** > **Manage Plugins**.
+2. Check the `Installed` tab and search for **Git**.
+3. If `Git Plugin` and `Git Client Plugin` are listed, they are already installed.
+4. If not, go to the `Available Plugins` tab, search for **Git**, and install the necessary plugins.
+![imagen](images/git_plugin_1.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+### 3. Learn how to clone a GIT/GITHUB repository from Jenkins
+ 
+**1. Create a New Jenkins Job**
+
+1. Open Jenkins and click on **New Item**.
+2. Enter a job name (e.g., `maven-job`).
+3. Select **Freestyle Project** and click **OK**.
+
+**2. Configure Source Code Management (SCM)**
+1. Under the **Source Code Management** section, select **Git**.
+2. Copy the repository URL from GitHub and paste it into the **Repository URL** field.
+```
+https://github.com/jenkins-docs/simple-java-maven-app
+```
+3. (Optional) Click **Advanced** to specify a different branch (default is `master`).
+4. No credentials are needed for public repositories.
+5. Click **Save**.
+
+![imagen](images/clone_git_repository_1.png)
+
+
+**3. Build the Job**
+1. Click **Build Now** to start the job.
+2. Navigate to **Build History** → **Console Output**.
+3. Verify that the repository was successfully cloned.
+
+![imagen](images/clone_git_repository_2.png)
+
+**4. Locate the Cloned Repository**
+1. Jenkins clones repositories into a **workspace**.
+2. To find the workspace, run the following command:
+   ```sh
+   docker exec -ti jenkins bash
+   cd /var/jenkins_home/workspace
+   ls -l
+   ```
+   ![imagen](images/clone_git_repository_3.png)
+   ![imagen](images/clone_git_repository_4.png)
+
+3. Locate your job folder (e.g., `maven-job`) and enter it:
+   ```sh
+   cd maven-job
+   ls -l
+   ```
+4. You should see all the cloned files matching the GitHub repository structure.
+
+![imagen](images/clone_git_repository_5.png)
 
 <div align="right">
   <strong>
