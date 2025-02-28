@@ -64,6 +64,7 @@
   - [1. Create a Git Server using Docker](#1-create-a-git-server-using-docker)
   - [2. Create your first Git Repository](#2-create-your-first-git-repository)
   - [3. Create a Git User to Interact with Your Repository](#3-create-a-git-user-to-interact-with-your-repository)
+  - [4. Upload the code for the Java App in your Repo](#4-upload-the-code-for-the-java-app-in-your-repo)
 
 
 ## Section 1: Resources for this course
@@ -3473,6 +3474,71 @@ http://localhost:8090/admin/projects/jenkins/maven
    - Click on **Settings** > **Members**.
    - Confirm that `Ricardo` has been added with the correct permissions.
 ![image](images/create_a_git_user_8.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 4. Upload the code for the Java App in your Repo
+
+**1. Ensure the GitLab Container is Running**
+Make sure GitLab is running in Docker before proceeding.  
+
+**2. Navigate to the Project Directory**  
+Open a terminal and move to the project folder:  
+
+```sh
+cd \jenkins_git\simple-java-maven-app
+```
+or download this repository and remove the `.git` directory:
+```
+https://github.com/jenkins-docs/simple-java-maven-app
+```
+**3. Initialize the Git Repository**
+
+Initialize a Git repository:  
+
+```sh
+git init
+```
+
+**4. Add and Commit the Code**
+
+Add all files to the repository and create the first commit:  
+
+```sh
+git add .
+git commit -m "Initial commit"
+```
+
+**5. Set GitLab as the Remote Repository**
+
+Add GitLab as a remote repository with the following command:  
+
+```sh
+git remote add origin http://localhost:8090/jenkins/maven.git
+```
+
+**6. Authenticate in GitLab**
+- Before pushing the code, log in to GitLab with the previously created user.  
+- Change the password on the first login if required.  
+
+**7. Push the Code to GitLab**
+- To upload the code from the `\jenkins_git\simple-java-maven-app` folder to GitLab, run:  
+
+```sh
+git push origin
+```
+
+**8. Verify the Upload in GitLab**
+- Open GitLab in your browser.  
+- Navigate to the repository and refresh the page to confirm that the files were successfully uploaded.
+
+![image](images/upload_the_code_in_your_repo_1.png)
 
 <div align="right">
   <strong>
