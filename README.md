@@ -71,6 +71,7 @@
   - [1. Install the DSL Plugin](#1-install-the-dsl-plugin)
   - [2. What is a Seed Job in DSL?](#2-what-is-a-seed-job-in-dsl)
   - [3. Understand the DSL Structure](#3-understand-the-dsl-structure)
+  - [4. Adding a Description to a Job in DSL](#4-adding-a-description-to-a-job-in-dsl)
 
 
 ## Section 1: Resources for this course
@@ -3874,6 +3875,58 @@ To explore more about DSL options:
 2. Notice that the job is **empty**, since we didn't define additional settings inside the curly braces `{}`.
 
 ![image](images/understand_the_dsl_structure_5.png )
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 4. Adding a Description to a Job in DSL
+
+**Adding a Description Using DSL**
+
+**Important Note**
+
+`Manually modifying` a job created via DSL **is not recommended**, as Jenkins will mark it as manually changed. Instead, always **update jobs** `through` the **seed job**.
+
+**Documentation**
+
+[https://jenkinsci.github.io/job-dsl-plugin/#method/javaposse.jobdsl.dsl.jobs.FreeStyleJob.description](https://jenkinsci.github.io/job-dsl-plugin/#method/javaposse.jobdsl.dsl.jobs.FreeStyleJob.description)
+
+![image](images/description_to_a_job_in_dsl_5.png )
+
+**Steps to Add a Description**
+
+1. Open the **seed job configuration**.
+2. Navigate to the **DSL script**.
+3. Create or modify a job definition.
+4. Inside the curly braces `{}`, add the `description` function.
+```groovy
+job('job_dsl_example') {
+    description('This is my awesome Job')
+}
+```
+
+
+![image](images/description_to_a_job_in_dsl_1.png)
+
+5. Save the **seed job**.
+6. Run the **seed job** to apply changes.
+
+**Verifying the Description**
+
+1. Navigate to the **Jenkins Dashboard**.
+2. Locate the newly created job (`job_dsl_example`).
+3. Click on the job.
+4. The **Description** field should now be populated.
+5. If you open the job configuration, you’ll also see the description set.
+
+![image](images/description_to_a_job_in_dsl_2.png)
+![image](images/description_to_a_job_in_dsl_3.png)
+![image](images/description_to_a_job_in_dsl_4.png)
 
 <div align="right">
   <strong>
