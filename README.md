@@ -67,6 +67,8 @@
   - [4. Upload the code for the Java App in your Repo](#4-upload-the-code-for-the-java-app-in-your-repo)
   - [5. Learn about Git Hooks](#5-learn-about-git-hooks)
   - [6. Trigger your Jenkins job using a Git Hook](#6-trigger-your-jenkins-job-using-a-git-hook)
+- [Section 12: Jenkins \& DSL](#section-12-jenkins--dsl)
+  - [1. Install the DSL Plugin](#1-install-the-dsl-plugin)
 
 
 ## Section 1: Resources for this course
@@ -3729,6 +3731,40 @@ After pushing the changes, check Jenkins again. Navigate to the console output, 
 - The specific reason for the failure.
 
 `This demonstrates` how Jenkins helps **identify issues early**. Whenever a faulty commit is pushed, the job will fail, and you will be able to analyze and fix the root cause before deployment.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+
+## Section 12: Jenkins & DSL
+### 1. Install the DSL Plugin
+
+1. **Access Plugin Management**
+   - Navigate to **Manage Jenkins**.
+   - Click on **Manage Plugins**.
+   
+2. **Locate the Job DSL Plugin**
+   - Go to the **Available** tab.
+   - Use the search bar and filter by the keyword `dsl`.
+   - The **Job DSL** plugin should appear at the top of the list.
+   
+3. **Install the Plugin**
+   - Select the **Job DSL** plugin.
+   - Click on **Install without restart**.
+   - Once the installation is complete, restart Jenkins by clicking **Restart Jenkins when installation is complete**.
+
+![image](images/dsl_plugin_1.png)
+
+4. **Verify the Installation**
+   - Once Jenkins has restarted, navigate back to **Manage Jenkins** > **Manage Plugins**.
+   - Go to the **Installed** tab.
+   - Use the search bar and filter by `dsl`.
+   - You should see the **Job DSL** plugin listed, confirming a successful installation.
 
 <div align="right">
   <strong>
