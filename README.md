@@ -69,6 +69,7 @@
   - [6. Trigger your Jenkins job using a Git Hook](#6-trigger-your-jenkins-job-using-a-git-hook)
 - [Section 12: Jenkins \& DSL](#section-12-jenkins--dsl)
   - [1. Install the DSL Plugin](#1-install-the-dsl-plugin)
+  - [2. What is a Seed Job in DSL?](#2-what-is-a-seed-job-in-dsl)
 
 
 ## Section 1: Resources for this course
@@ -3764,6 +3765,49 @@ After pushing the changes, check Jenkins again. Navigate to the console output, 
    - Go to the **Installed** tab.
    - Use the search bar and filter by `dsl`.
    - You should see the **Job DSL** plugin listed, confirming a successful installation.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 2. What is a Seed Job in DSL?
+
+**Understanding the Seed Job**
+
+A **Seed Job** is a special Jenkins job responsible **for creating other jobs**. It acts as a template or a **parent job** that defines the configuration and `structure for multiple jobs`.
+
+**How It Works**
+
+1. The seed job is created like any other `Jenkins job`.
+2. Inside the **seed job**, you define the configuration `for multiple jobs`.
+3. When the seed job runs, it generates and configures the specified jobs automatically.
+
+**Steps to Create a Seed Job**
+
+1. **Create a New Item**
+   - Navigate to Jenkins and create a new item.
+   - Name it something like `job-dsl` (or any preferred name).
+   - Choose **Freestyle Project** and click **OK**.
+
+2. **Configure the Build Step**
+   - Scroll down to the **Build** section.
+   - Add a new build step and select **Process Job DSL**.
+   
+3. **Define the DSL Script**
+   - You have two options:
+     - **Use the provided DSL script**: Manually define job configurations within Jenkins.
+     - **Look on the file system**: Load a script from the Jenkins container file system.
+   - Initially, you can define job configurations directly in Jenkins.
+
+![images](images/seed_job_in_dsl_1.png)
+
+4. **Execute the Seed Job**
+   - When the seed job runs, it processes the defined DSL script.
+   - The jobs described in the script are automatically created and configured.
 
 <div align="right">
   <strong>
