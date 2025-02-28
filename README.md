@@ -3910,11 +3910,18 @@ job('job_dsl_example') {
 }
 ```
 
-
 ![image](images/description_to_a_job_in_dsl_1.png)
 
 5. Save the **seed job**.
 6. Run the **seed job** to apply changes.
+
+**Note**: It is now necessary to approve the script.
+
+**Manually Approve the Script**
+1. Go to **Jenkins** Dashboard.
+2. Navigate to **Manage Jenkins** → **In-process Script Approval**
+3. You’ll see a list of scripts waiting for approval.
+4. **Approve the script manually** and then re-run the job.
 
 **Verifying the Description**
 
