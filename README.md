@@ -65,6 +65,7 @@
   - [2. Create your first Git Repository](#2-create-your-first-git-repository)
   - [3. Create a Git User to Interact with Your Repository](#3-create-a-git-user-to-interact-with-your-repository)
   - [4. Upload the code for the Java App in your Repo](#4-upload-the-code-for-the-java-app-in-your-repo)
+  - [5. Learn about Git Hooks](#5-learn-about-git-hooks)
 
 
 ## Section 1: Resources for this course
@@ -3539,6 +3540,100 @@ git push origin
 - Navigate to the repository and refresh the page to confirm that the files were successfully uploaded.
 
 ![image](images/upload_the_code_in_your_repo_1.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 5. Learn about Git Hooks
+
+If you have never heard about Git hooks before, don't worry, but you must know that a **Git hook** is **like a trigger**.
+
+For example, whenever someone pushes to any branch, **a trigger is activated**, and you can define what action should be performed.
+
+For instance, whenever a developer pushes to your master branch, you could trigger a script that calls your Maven job, initiating a new build, downloading the new code, and executing necessary tasks.
+
+That's essentially what a Git hook does. It acts as a trigger when a specified event occurs.
+
+In this case, we are going to focus on **PushEvents**, which occur whenever someone pushes to a specific branch.
+
+**Creating a Git Hook in a Git Container**
+
+To achieve this, we need to create the Git hook inside the Git container.
+
+1. Run the following command to list running Docker containers:
+   ```sh
+   docker ps
+   ```
+2. Access the Git server container:
+   ```sh
+   docker exec -it <git-server-container> bash
+   ```
+3. Navigate to the repository directory:
+   ```sh
+   cd /var/opt/gitlab/git-data/repositories/<group>/<repository>
+   ```
+4. List the repository structure:
+   ```sh
+   ls
+   ```
+5. Create a new directory for custom hooks:
+   ```sh
+   mkdir custom_hooks && cd custom_hooks
+   ```
+6. Create the script that will be triggered when someone pushes to this repository.
+
+**Writing the Git Hook Script**
+
+Inside the `custom_hooks` directory, create a `post-receive` file and add the following content:
+
+```sh
+#!/bin/bash
+
+if ! [ -t 0 ]; then
+	read -a ref
+fi
+
+IFS='/' read -ra REF <<< "${ref[2]}"
+branch="${REF[2]}"
+
+if [ $branch == "master" ]; then
+	crumb=$(curl -u "jenkins:1234" -s 'http://jenkins:8080/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)')
+	curl -u "jenkins:1234" -H "$crumb" -X POST http://jenkins:8080/job/maven-job/build?delay=0sec
+
+	if [ $? -eq 0 ]; then
+		echo "*** Ok"
+	else
+		echo "*** Error"
+	fi
+
+fi
+```
+- This script checks if the push occurred on the **master** branch.
+- If true, it generates an authentication crumb.
+- Finally, it triggers the **Maven job** using Jenkins.
+- Note: The Jenkins URL should be the internal service name from the `docker-compose` file.
+
+**Saving and Applying Permissions**
+
+1. Save the file and verify its content:
+   ```sh
+   cat post-receive
+   ```
+2. Make the script executable:
+   ```sh
+   chmod +x post-receive
+   ```
+3. Change the owner and group of the `custom_hooks` directory to `git`:
+   ```sh
+   chown -R git:git /var/opt/gitlab/git-data/repositories/<group>/<repository>/custom_hooks
+   ```
+
+Now, the Git hook is correctly set up. Whenever **you push to the master branch**, the script will execute, triggering the Maven job.
 
 <div align="right">
   <strong>
