@@ -66,6 +66,7 @@
   - [3. Create a Git User to Interact with Your Repository](#3-create-a-git-user-to-interact-with-your-repository)
   - [4. Upload the code for the Java App in your Repo](#4-upload-the-code-for-the-java-app-in-your-repo)
   - [5. Learn about Git Hooks](#5-learn-about-git-hooks)
+  - [6. Trigger your Jenkins job using a Git Hook](#6-trigger-your-jenkins-job-using-a-git-hook)
 
 
 ## Section 1: Resources for this course
@@ -3634,6 +3635,100 @@ fi
    ```
 
 Now, the Git hook is correctly set up. Whenever **you push to the master branch**, the script will execute, triggering the Maven job.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 6. Trigger your Jenkins job using a Git Hook
+
+**1. Navigate to the Maven Folder**
+
+Remember that this folder refers to our Git server. To verify this, run:
+```sh
+cat .git/config
+```
+This should display our Git repository configuration, including `gitlab.example.com`.
+
+**2. Modify the Code to Trigger the Git Hook**
+
+Let's search for the text "Hello" recursively in our files:
+```sh
+grep -r "Hello"
+```
+This will show that we have two files containing this text. We will modify `App.java` to update the application message:
+```java
+System.out.println("Hello World from Git and Jenkins");
+```
+Save the changes and proceed to modify the test file `AppTest.java`. Locate the line that uses `assertEquals` and update it as follows:
+```java
+assertEquals("Hello World from Git and Jenkins", someFunction());
+```
+Save the file.
+
+**3. Commit and Push the Changes**
+
+Check the modified files:
+```sh
+git status
+```
+You should see that `App.java` and `AppTest.java` have been modified. Now, commit and push the changes:
+```sh
+git add src
+```
+```sh
+git commit -m "Test Git hook trigger"
+```
+```sh
+git push origin master
+```
+After pushing, you will see the upload process and kernel command output.
+
+**4. Verify the Jenkins Job Execution**
+
+Go to your Jenkins project and reload the page. Check the last execution number (e.g., 18). Now, navigate to the Jenkins job console, where you should see:
+- The Jenkins user triggering the build.
+- The repository downloading the latest code.
+- The build, test, and packaging process being executed.
+- The updated message `Hello World from Git and Jenkins` appearing in the output.
+
+This confirms that any changes pushed to the repository will trigger the Jenkins job automatically.
+
+**5. Testing an Intentional Failure**
+
+Modify the test file again to create an intentional failure. Run:
+```sh
+grep -r "Hello"
+```
+Modify `AppTest.java` to make the test fail by changing the assertion:
+```java
+assertEquals("Hello World from Git", someFunction());
+```
+Since `App.java` contains a different message, this test will fail. Save the file and run:
+```sh
+git status
+```
+```sh
+git add src
+```
+```sh
+git commit -m "Intentional failure"
+```
+```sh
+git push origin master
+```
+
+**6. Analyzing the Failure in Jenkins**
+
+After pushing the changes, check Jenkins again. Navigate to the console output, where you should see:
+- The test execution failing due to assertion mismatch.
+- The specific reason for the failure.
+
+`This demonstrates` how Jenkins helps **identify issues early**. Whenever a faulty commit is pushed, the job will fail, and you will be able to analyze and fix the root cause before deployment.
 
 <div align="right">
   <strong>
