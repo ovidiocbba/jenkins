@@ -3740,7 +3740,6 @@ After pushing the changes, check Jenkins again. Navigate to the console output, 
 
 ---
 
-
 ## Section 12: Jenkins & DSL
 ### 1. Install the DSL Plugin
 
