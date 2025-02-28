@@ -72,6 +72,7 @@
   - [2. What is a Seed Job in DSL?](#2-what-is-a-seed-job-in-dsl)
   - [3. Understand the DSL Structure](#3-understand-the-dsl-structure)
   - [4. Adding a Description to a Job in DSL](#4-adding-a-description-to-a-job-in-dsl)
+  - [5. Parameters](#5-parameters)
 
 
 ## Section 1: Resources for this course
@@ -3934,6 +3935,85 @@ job('job_dsl_example') {
 ![image](images/description_to_a_job_in_dsl_2.png)
 ![image](images/description_to_a_job_in_dsl_3.png)
 ![image](images/description_to_a_job_in_dsl_4.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 5. Parameters
+
+**Understanding Parameters in DSL**
+You define parameters inside **curly braces `{}`**, specifying the type and attributes of each parameter.
+
+**Types of Parameters**
+
+1. **String Parameter**
+   - Defines a text-based input.
+   - Accepts a name, default value, and description.
+   
+2. **Boolean Parameter**
+   - Defines a true/false toggle.
+   - Accepts a name and a default value.
+   
+3. **Choice Parameter**
+   - Defines a dropdown selection.
+   - Accepts a name and a list of options.
+   - Allows setting a default option.
+
+**Documentation**
+
+[FreeStyleJob parameters](https://jenkinsci.github.io/job-dsl-plugin/#method/javaposse.jobdsl.dsl.jobs.FreeStyleJob.parameters)
+
+![image](images/parameters_job_dsl_1.png)
+
+**Implementing the Parameters**
+
+1. **Open the Seed Job**
+   - Navigate to **Jenkins**.
+   - Open the **seed job** configuration.
+   
+2. **Modify the DSL Script**
+   - Add the **parameters** block with required values.
+    ```groovy
+    job('job_dsl_example') {
+        description('This is my awesome Job')
+      
+        parameters {
+            stringParam('Planet', defaultValue = 'world', description = 'This is the world')
+      booleanParam('FLAG', true)
+            choiceParam('OPTION', ['option 1 (default)', 'option 2', 'option 3'])
+        }
+    }
+    ```
+   - Save the configuration.
+   
+3. **Build the Seed Job**
+   - Execute the **seed job**.
+   - Verify that the job was successfully created.
+
+**Note**: It is now necessary to approve the script.
+
+**Manually Approve the Script**
+1. Go to **Jenkins** Dashboard.
+2. Navigate to **Manage Jenkins** → **In-process Script Approval**
+3. You’ll see a list of scripts waiting for approval.
+4. **Approve the script manually** and then re-run the job.
+
+**Verifying the Parameters**
+
+1. Navigate to **Jenkins Dashboard**.
+2. Open the created job (`dsl_example`).
+3. Click **Configure** and check the parameters:
+   - **String Parameter**: `Planet` with default `World`.
+   - **Boolean Parameter**: `FLAG` set to `true`.
+   - **Choice Parameter**: `OPTION` with available choices.
+4. Click **Build with Parameters** to test parameterized execution.
+
+![image](images/parameters_job_dsl_1.png)
 
 <div align="right">
   <strong>
