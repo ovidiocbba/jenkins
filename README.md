@@ -70,6 +70,7 @@
 - [Section 12: Jenkins \& DSL](#section-12-jenkins--dsl)
   - [1. Install the DSL Plugin](#1-install-the-dsl-plugin)
   - [2. What is a Seed Job in DSL?](#2-what-is-a-seed-job-in-dsl)
+  - [3. Understand the DSL Structure](#3-understand-the-dsl-structure)
 
 
 ## Section 1: Resources for this course
@@ -3808,6 +3809,71 @@ A **Seed Job** is a special Jenkins job responsible **for creating other jobs**.
 4. **Execute the Seed Job**
    - When the seed job runs, it processes the defined DSL script.
    - The jobs described in the script are automatically created and configured.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+### 3. Understand the DSL Structure
+
+**Executing the DSL Job**
+1. Open the job that was previusly created `job_dsl`
+2. Scroll down to the **Build** section.
+3. Add a new build step and select **Process Job DSL**.
+4. Paste this content.
+```groovy 
+// Creates a new job in Jenkins named 'job_dsl_created'
+job('job_dsl_created') {
+
+}
+```
+3. Save the configuration.
+4. Build the project to execute the job.
+
+![images](images/understand_the_dsl_structure.png)
+
+5. Verify the execution log to confirm that `job_dsl` was successfully generated.
+
+![image](images/understand_the_dsl_structure_1.png)
+
+**Note**: It is now necessary to approve the script.
+
+**Manually Approve the Script**
+1. Go to **Jenkins** Dashboard.
+2. Navigate to **Manage Jenkins** → **In-process Script Approval**
+3. You’ll see a list of scripts waiting for approval.
+4. **Approve the script manually** and then re-run the job.
+
+**Verifying the Created Job**
+
+1. Navigate to the **Jenkins Dashboard**.
+2. Locate the newly created job in the list.
+
+![image](images/understand_the_dsl_structure_2.png)
+
+3. Click on the job to inspect its details.
+4. Check the **parent job** (seed job), which should be `job_dsl`.
+
+![image](images/understand_the_dsl_structure_3.png)
+
+**Understanding DSL Documentation**
+
+To explore more about DSL options:
+
+[https://jenkinsci.github.io/job-dsl-plugin/#path/job](https://jenkinsci.github.io/job-dsl-plugin/#path/job)
+
+![image](images/understand_the_dsl_structure_4.png)
+
+**Reviewing the Job Configuration**
+
+1. Open the created job and click **Configure**.
+2. Notice that the job is **empty**, since we didn't define additional settings inside the curly braces `{}`.
+
+![image](images/understand_the_dsl_structure_5.png )
 
 <div align="right">
   <strong>
