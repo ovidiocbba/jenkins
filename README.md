@@ -73,6 +73,11 @@
   - [3. Understand the DSL Structure](#3-understand-the-dsl-structure)
   - [4. Adding a Description to a Job in DSL](#4-adding-a-description-to-a-job-in-dsl)
   - [5. Parameters](#5-parameters)
+- [Section 13: CI/CD - Definitions](#section-13-cicd---definitions)
+  - [1. Introduction to CI/CD](#1-introduction-to-cicd)
+  - [2. Introduction to CI/CD](#2-introduction-to-cicd)
+  - [3. Continuous Delivery](#3-continuous-delivery)
+  - [4. Continuous Deployment](#4-continuous-deployment)
 
 
 ## Section 1: Resources for this course
@@ -4022,3 +4027,77 @@ You define parameters inside **curly braces `{}`**, specifying the type and attr
 </div>
 
 ---
+
+## Section 13: CI/CD - Definitions
+### 1. Introduction to CI/CD
+CI/CD is a way to build, test, and deploy code automatically.
+
+Before CI/CD, people did many tasks by hand, like testing and deploying code. This could cause mistakes and take a lot of time.
+
+With CI/CD, you create a workflow that does everything for you.
+
+- **CI (Continuous Integration):** build and test the code.
+- **CD (Continuous Delivery / Deployment):** deploy the code to test environments and then to production.
+
+CI/CD helps teams deploy faster and with fewer errors.
+
+### 2. Introduction to CI/CD
+![image](images/continuous_integration.png)
+First, your code is stored in a **Git repository**.  
+Developers push their code (for example, Java code) to this repository.
+
+When the code is pushed, the **CI process starts automatically**, usually using a tool like **Jenkins**.
+
+The CI process does two main things:
+- **Build the application** (for example, using Maven to create a package).
+- **Test the application** to make sure it works correctly.
+
+Testing is very important because it shows that the application behaves as expected.
+
+In short, **Continuous Integration means building and testing your application automatically**.
+
+### 3. Continuous Delivery
+Continuous Delivery happens **after Continuous Integration** finishes successfully.  
+This means the application is built and all tests pass.
+
+Next, the application is **deployed to a test environment**, like:
+- Dev
+- QA
+- Staging
+
+This step is **optional**. You may use it or not.
+
+In the test environment, you run more tests, usually **acceptance tests**, to check if the application works well before production.
+
+Remember:
+- **Continuous Integration:** build and test the application.
+- **Continuous Delivery:** deploy to a test environment and test again.
+
+### 4. Continuous Deployment
+Continuous Deployment is the **final step** in CI/CD.
+
+After:
+- the application is built,
+- tested many times,
+- deployed to a test environment,
+- tested again,
+
+then the application is **deployed to production** automatically.
+
+The way to deploy depends on the application and where it is hosted.
+
+Continuous Integration and Continuous Deployment are strategies to:
+- automate code delivery,
+- reduce human work,
+- reduce errors.
+
+In short, **Continuous Deployment means automatically deploying your application to production**.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
