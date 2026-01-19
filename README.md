@@ -75,7 +75,7 @@
   - [5. Parameters](#5-parameters)
 - [Section 13: CI/CD - Definitions](#section-13-cicd---definitions)
   - [1. Introduction to CI/CD](#1-introduction-to-cicd)
-  - [2. Introduction to CI/CD](#2-introduction-to-cicd)
+  - [2. Continuous Integration](#2-continuous-integration)
   - [3. Continuous Delivery](#3-continuous-delivery)
   - [4. Continuous Deployment](#4-continuous-deployment)
 
@@ -4041,8 +4041,9 @@ With CI/CD, you create a workflow that does everything for you.
 
 CI/CD helps teams deploy faster and with fewer errors.
 
-### 2. Introduction to CI/CD
 ![image](images/continuous_integration.png)
+
+### 2. Continuous Integration
 First, your code is stored in a **Git repository**.  
 Developers push their code (for example, Java code) to this repository.
 
