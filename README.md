@@ -78,6 +78,9 @@
   - [2. Continuous Integration](#2-continuous-integration)
   - [3. Continuous Delivery](#3-continuous-delivery)
   - [4. Continuous Deployment](#4-continuous-deployment)
+- [Section 14: Jenkins Pipeline - Jenkinsfile](#section-14-jenkins-pipeline---jenkinsfile)
+  - [1. Introduction to Pipeline](#1-introduction-to-pipeline)
+  - [2. Introduction to Jenkinsfile](#2-introduction-to-jenkinsfile)
 
 
 ## Section 1: Resources for this course
@@ -4102,3 +4105,138 @@ In short, **Continuous Deployment means automatically deploying your application
 
 ---
 
+## Section 14: Jenkins Pipeline - Jenkinsfile
+### 1. Introduction to Pipeline
+![Diagrama de pipeline](https://www.jenkins.io/doc/book/resources/pipeline/realworld-pipeline-flow.png)
+https://www.jenkins.io/doc/book/pipeline/
+
+A pipeline is the **full workflow** used in the CI/CD process.  
+It starts when developers write and push code and ends when the application is deployed to production.
+
+A pipeline has **many stages**.  
+Each stage is one step in the workflow.
+
+A common pipeline looks like this:
+- **Code push** to Git (this starts the pipeline).
+- **Checkout code** (download the new code).
+- **Build the application** (for example, using Maven).
+- **Create a Docker image**.
+- **Test the application**.
+- **Deploy to production**.
+
+You can add as many stages as you need.
+
+In short, a **pipeline is a sequence of steps that automatically build, test, and deploy your application**.
+
+### 2. Introduction to Jenkinsfile
+
+- A pipeline is a set of **stages**.
+- Each **stage** is one step in the workflow.
+- Example stages:
+  - **Build**
+  - **Test**
+  - **Deploy**
+
+https://www.jenkins.io/doc/book/pipeline/jenkinsfile/
+
+# Types of Jenkins Pipelines
+There are **two types** of pipelines in Jenkins:
+
+1. **Declarative Pipeline**
+   - Very **simple and easy to use**
+   - Good for **SysAdmins** or people with little coding experience
+   - Uses a **template structure**
+   - You can run Bash, Python, Ansible, or other tools inside stages
+
+```jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
+```
+
+2. **Scripted Pipeline**
+   - More **complex**
+   - Written in **Groovy** (similar to Java)
+   - Requires programming knowledge
+   - Harder if you don’t know Java or Groovy
+
+```jenkinsfile
+node {
+    checkout scm
+    /* .. snip .. */
+}
+```
+
+### 3.  Install the Jenkins Pipeline Plugin
+![image](images/install_the_jenkins_pipeline_plugin.png)
+- Go to **Manage Jenkins → Manage Plugins**.
+- Search for **Pipeline** in the *Installed* or *Available* tab.
+- Pipeline is usually **installed by default** with suggested plugins.
+- If not installed, you can **install it manually**.
+- Make sure the **Pipeline plugin is installed**, because it is very important.
+
+### 4. Create your first Pipeline
+- A pipeline file starts with **pipeline** and needs **agent any**.
+- The main part is **stages**.
+- Each stage has **steps** where commands are executed.
+
+# Example Stages
+```jenkinsfile
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building..'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....'
+            }
+        }
+    }
+}
+```
+- **Build** → echo "Building"
+- **Test** → echo "Test"
+- **Deploy** → echo "Deploying"
+
+- Steps can run **scripts, shell commands, and deployments**.
+- Create a **new Pipeline project** in Jenkins.
+- Paste the pipeline script and **build the project**.
+- Jenkins shows each stage and its **logs in Console Output**.
+
+- You have now created your **first Jenkins pipeline**.
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
