@@ -4455,10 +4455,10 @@ SECRET_VAR = credentials('SECRET_TEXT')
 
 You can use one or more post actions.
 
-**Summary**
+**Summary**  
 Post actions define what Jenkins does after a job finishes.
 
-**Examples**
+**Examples**  
 **Case 1: Failure**
 This pipeline fails because of `exit 1`.
 ```groovy
@@ -4489,7 +4489,7 @@ pipeline {
 ```
 ![Image](images/post_actions_1.png)
 
-**Case 2: Success**
+**Case 2: Success**  
 This pipeline succeeds (no error).
 ```groovy
 pipeline {
