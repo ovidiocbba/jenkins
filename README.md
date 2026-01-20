@@ -88,6 +88,7 @@
   - [7. Timeouts](#7-timeouts)
   - [8. Environment variables](#8-environment-variables)
   - [9. Credentials](#9-credentials)
+  - [10. Post actions](#10-post-actions)
 
 
 ## Section 1: Resources for this course
@@ -4442,6 +4443,81 @@ SECRET_VAR = credentials('SECRET_TEXT')
 - The **ID** of the credential is important to reference it correctly.
 - Useful for storing passwords, tokens, or other sensitive information.
 - Now you know how to **use credentials securely** in Jenkins pipelines.
+
+### 10. Post actions
+- Post actions run **after** the pipeline ends.
+- They are inside the **post** section.
+
+**Types**
+- **always**: runs every time  
+- **success**: runs if the job succeeds  
+- **failure**: runs if the job fails  
+
+You can use one or more post actions.
+
+**Summary**
+Post actions define what Jenkins does after a job finishes.
+
+**Examples**
+**Case 1: Failure**
+This pipeline fails because of `exit 1`.
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                sh 'echo "Fail!"; exit 1'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'I will always get executed :D'
+        }
+        success {
+            echo 'I will only get executed if this success'
+        }
+        failure {
+            echo 'I will only get executed if this fails'
+        }
+        unstable {
+            echo 'I will only get executed if this is unstable'
+        }
+    }
+}
+```
+![Image](images/post_actions_1.png)
+
+**Case 2: Success**
+This pipeline succeeds (no error).
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                sh 'echo I am good'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'I will always get executed :D'
+        }
+        success {
+            echo 'I will only get executed if this success'
+        }
+        failure {
+            echo 'I will only get executed if this fails'
+        }
+        unstable {
+            echo 'I will only get executed if this is unstable'
+        }
+    }
+}
+```
+![Image](images/post_actions_2.png)
 
 <div align="right">
   <strong>
