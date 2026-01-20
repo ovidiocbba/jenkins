@@ -4257,7 +4257,7 @@ The instructor shows how to create one stage called `build` and inside it execut
      '''
      ```
    - Example:
-   ```groovy
+```groovy
    pipeline {
     agent any
     stages {
@@ -4272,7 +4272,7 @@ The instructor shows how to create one stage called `build` and inside it execut
         }
     }
   }
-   ```
+```
    
 4. **Save the changes**  
    - Save the pipeline configuration.
@@ -4291,7 +4291,7 @@ The instructor shows how to create one stage called `build` and inside it execut
    - Everything runs and shows in the Jenkins console.
 
 
-### 5. Add multi-steps to your Pipeline
+### 6. 
 
 <div align="right">
   <strong>
