@@ -4459,7 +4459,7 @@ You can use one or more post actions.
 Post actions define what Jenkins does after a job finishes.
 
 **Examples**  
-**Case 1: Failure**
+**Case 1: Failure**  
 This pipeline fails because of `exit 1`.
 ```groovy
 pipeline {
