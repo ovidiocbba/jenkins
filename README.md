@@ -4291,7 +4291,13 @@ The instructor shows how to create one stage called `build` and inside it execut
    - Everything runs and shows in the Jenkins console.
 
 ### 6. Retry
- Retry means trying a command again if it fails. The instructor shows a pipeline with one stage called `Timeout`, and inside it a command that will fail (`sh "I"`). By using `retry(3)`, Jenkins will try this command three times before marking it as failed. After running the pipeline, you can see in the console output all three attempts and the error messages. This is useful when a process might fail sometimes and you want Jenkins to try it again automatically. Now you know how to retry a command in a Jenkins pipeline.
+
+- **Retry** means trying a command again if it fails.  
+- Example: a stage `Timeout` has a command `sh "I"` (invalid, will fail).  
+- Using `retry(3)` makes Jenkins try the command **up to 3 times** before failing.  
+- After running, the **console shows all attempts and errors**.  
+- Useful when a command may fail sometimes but should be retried automatically.  
+- Now you know how to **retry commands in a pipeline**.
 
 **Example**
 ```groovy
