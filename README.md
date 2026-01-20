@@ -4314,7 +4314,33 @@ pipeline {
     }
 }
 ```
+### 7. Timeouts
+![Image](images/timeout.png)
+- **Timeout** stops a task if it takes too long.  
+- Example: a stage has a command `sleep 5` (waits 5 seconds).  
+- We set a timeout of **3 seconds**, so Jenkins stops the task automatically.  
+- Commands that finish quickly (like `echo hello`) are not affected.  
+- Useful to prevent tasks from **getting stuck** or taking longer than expected.  
+- Now you know how to use the **timeout instruction** in a Jenkins pipeline.
+**Example**
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Deploy') {
+            steps {
+                retry(3) {
+                    sh 'echo hello'
+                }
 
+                timeout(time: 3, unit: 'SECONDS') {
+                    sh 'sleep 5'
+                }
+            }
+        }
+    }
+}
+```
 <div align="right">
   <strong>
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
