@@ -4341,6 +4341,57 @@ pipeline {
     }
 }
 ```
+### 8. Environment variables
+
+- **Purpose:** Store values that can be used anywhere in your pipeline.
+  Example:
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        NAME = 'ricardo'
+        LASTNAME = 'gonzalez'
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo $NAME $LASTNAME'
+            }
+        }
+    }
+}
+```
+
+- **How to define:**  
+  Use the `environment` block with curly braces `{}`.  
+  Example:
+  ```groovy
+  environment {
+      NAME = "Ricardo"
+      LAST_NAME = "Gonzalez"
+  }
+  ```
+
+- **How to use:**  
+  Reference variables with a dollar sign `$`, for example:
+  ```groovy
+  echo $NAME $LAST_NAME
+  ```
+
+- **Steps to apply:**
+  1. Copy the pipeline code with `environment` block.
+  2. Go to your job configuration in Jenkins.
+  3. Delete old pipeline code and paste the new one.
+  4. Save and run the pipeline.
+  5. Check **Console Output** to see variables in action (`echo Ricardo Gonzalez`).
+
+- **Notes:**  
+  - Variables can store names, credentials, or any values needed in the pipeline.  
+  - Commands using these variables work normally.  
+  - Now you know how to **create and use environment variables** in Jenkins pipelines.
+
 <div align="right">
   <strong>
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
