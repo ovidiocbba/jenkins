@@ -81,6 +81,13 @@
 - [Section 14: Jenkins Pipeline - Jenkinsfile](#section-14-jenkins-pipeline---jenkinsfile)
   - [1. Introduction to Pipeline](#1-introduction-to-pipeline)
   - [2. Introduction to Jenkinsfile](#2-introduction-to-jenkinsfile)
+  - [3. Install the Jenkins Pipeline Plugin](#3-install-the-jenkins-pipeline-plugin)
+  - [4. Create your first Pipeline](#4-create-your-first-pipeline)
+  - [5. Add multi-steps to your Pipeline](#5-add-multi-steps-to-your-pipeline)
+  - [6. Retry](#6-retry)
+  - [7. Timeouts](#7-timeouts)
+  - [8. Environment variables](#8-environment-variables)
+  - [9. Environment variables](#9-environment-variables)
 
 
 ## Section 1: Resources for this course
@@ -4139,7 +4146,7 @@ In short, a **pipeline is a sequence of steps that automatically build, test, an
 
 https://www.jenkins.io/doc/book/pipeline/jenkinsfile/
 
-# Types of Jenkins Pipelines
+**Types of Jenkins Pipelines**
 There are **two types** of pipelines in Jenkins:
 
 1. **Declarative Pipeline**
@@ -4185,7 +4192,7 @@ node {
 }
 ```
 
-### 3.  Install the Jenkins Pipeline Plugin
+### 3. Install the Jenkins Pipeline Plugin
 ![image](images/install_the_jenkins_pipeline_plugin.png)
 - Go to **Manage Jenkins → Manage Plugins**.
 - Search for **Pipeline** in the *Installed* or *Available* tab.
@@ -4198,7 +4205,7 @@ node {
 - The main part is **stages**.
 - Each stage has **steps** where commands are executed.
 
-# Example Stages
+Example Stages
 ```jenkinsfile
 pipeline {
     agent any
@@ -4391,6 +4398,50 @@ pipeline {
   - Variables can store names, credentials, or any values needed in the pipeline.  
   - Commands using these variables work normally.  
   - Now you know how to **create and use environment variables** in Jenkins pipelines.
+
+### 9. Environment variables
+- **Purpose:** Safely use sensitive information in your pipeline.
+**Example**
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        secret = credentials('TEST')
+    }
+    stages {
+        stage('Example stage 1') {
+            steps {
+                sh 'echo $secret'
+            }
+        }
+    }
+}
+```
+- **How to define:**
+Use an `environment` block with `credentials` function:
+```groovy
+environment {
+SECRET_VAR = credentials('SECRET_TEXT')
+}
+```
+
+- **Steps to apply:**
+1. Go to Jenkins -> Manage -> Credentials -> Global.
+2. Create a new credential (e.g., Secret Text `1,2,3,4`) with an **ID** (e.g., `SECRET_TEXT`).
+3. Copy pipeline code with `environment { SECRET_VAR = credentials('SECRET_TEXT') }`.
+4. Go to your pipeline job -> Configure.
+5. Delete old code and paste new pipeline code.
+6. Save and build the pipeline.
+![Image](images/environment_variables_1.png)
+![Image](images/environment_variables_2.png)
+![Image](images/environment_variables_3.png)
+
+- **Notes:**
+- Jenkins will **not display the secret value** in console output.
+- The **ID** of the credential is important to reference it correctly.
+- Useful for storing passwords, tokens, or other sensitive information.
+- Now you know how to **use credentials securely** in Jenkins pipelines.
 
 <div align="right">
   <strong>
