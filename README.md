@@ -87,7 +87,7 @@
   - [6. Retry](#6-retry)
   - [7. Timeouts](#7-timeouts)
   - [8. Environment variables](#8-environment-variables)
-  - [9. Environment variables](#9-environment-variables)
+  - [9. Credentials](#9-credentials)
 
 
 ## Section 1: Resources for this course
@@ -4399,7 +4399,7 @@ pipeline {
   - Commands using these variables work normally.  
   - Now you know how to **create and use environment variables** in Jenkins pipelines.
 
-### 9. Environment variables
+### 9. Credentials
 - **Purpose:** Safely use sensitive information in your pipeline.
 **Example**
 ```groovy
