@@ -4233,6 +4233,62 @@ pipeline {
 
 - You have now created your **first Jenkins pipeline**.
 
+### 5. Add multi-steps to your Pipeline
+In this section, you learn how to run real commands in a Jenkins pipeline using `sh`.
+The instructor shows how to create one stage called `build` and inside it execute commands like `echo` and `ls`. You can run one command in a single line or multiple commands using triple quotes so you can write several lines. After saving and running the pipeline, you can see the results of each command in the Jenkins console output, which shows the printed messages and the result of the Linux command.
+
+1. **Open your Jenkins project**  
+   - Go to the pipeline you want to configure.
+
+2. **Set up a stage**  
+   - Create a stage called `build` (or use the existing one).
+
+3. **Add commands with `sh`**  
+   - For one command:
+     ```groovy
+     sh 'echo "My first pipeline"'
+     ```
+   - For multiple commands:
+     ```groovy
+     sh '''
+     echo "My first pipeline"
+     echo "I can do more stuff here"
+     ls
+     '''
+     ```
+   - Example:
+   ```jenkinsfile
+   pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'echo "My first pipeline"'
+                sh '''
+                    echo "By the way, I can do more stuff in here"
+                    ls -lah
+                '''
+            }
+        }
+    }
+}
+   ```
+4. **Save the changes**  
+   - Save the pipeline configuration.
+
+5. **Run the pipeline**  
+   - Click **Build Now** to start it.
+
+6. **Check the output**  
+   - Go to **Console Output** to see:
+     - Messages from `echo`
+     - Results from Linux commands (`ls`, etc.)
+
+7. **Notes**  
+   - You can run many commands in one stage.  
+   - Use triple quotes `'''` for multiple lines.  
+   - Everything runs and shows in the Jenkins console.
+
 <div align="right">
   <strong>
     <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
