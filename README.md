@@ -89,7 +89,42 @@
   - [8. Environment variables](#8-environment-variables)
   - [9. Credentials](#9-credentials)
   - [10. Post actions](#10-post-actions)
-
+- [Section 15: CI/CD + Jenkins Pipeline + Docker +  Maven](#section-15-cicd--jenkins-pipeline--docker---maven)
+  - [1. Introduction](#1-introduction)
+  - [2. Notes on Docker in Docker](#2-notes-on-docker-in-docker)
+  - [3. Learn how to install Docker inside of a Docker Container](#3-learn-how-to-install-docker-inside-of-a-docker-container)
+  - [4. Define the steps for your Pipeline](#4-define-the-steps-for-your-pipeline)
+  - [5. Notes on building a jar with docker](#5-notes-on-building-a-jar-with-docker)
+  - [8. Notes on creating the Dockerfile](#8-notes-on-creating-the-dockerfile)
+  - [9. Build: Create a Dockerfile and build an image with your Jar](#9-build-create-a-dockerfile-and-build-an-image-with-your-jar)
+- [Result](#result)
+  - [10. Build: Create a Docker Compose file to automate the Image build process](#10-build-create-a-docker-compose-file-to-automate-the-image-build-process)
+  - [11. Build: Write a bash script to automate the Docker Image creation process](#11-build-write-a-bash-script-to-automate-the-docker-image-creation-process)
+  - [12. Build: Add your scripts to the Jenkinsfile](#12-build-add-your-scripts-to-the-jenkinsfile)
+  - [13. Test: Learn how to test your code using Maven and Docker](#13-test-learn-how-to-test-your-code-using-maven-and-docker)
+  - [14. Test: Create a bash script to automate the test process](#14-test-create-a-bash-script-to-automate-the-test-process)
+  - [15. Test: Add your test script to Jenkinsfile](#15-test-add-your-test-script-to-jenkinsfile)
+  - [16. Create a remote machine to deploy your containerized app](#16-create-a-remote-machine-to-deploy-your-containerized-app)
+  - [17. Push: Create your own Docker Hub account](#17-push-create-your-own-docker-hub-account)
+  - [18. Push: Create a Repository in Docker Hub](#18-push-create-a-repository-in-docker-hub)
+  - [19. Push: Learn how to Push/Pull Docker images to your Repository](#19-push-learn-how-to-pushpull-docker-images-to-your-repository)
+  - [20. Push: Write a bash script to automate the push process](#20-push-write-a-bash-script-to-automate-the-push-process)
+  - [21. Push: Add your push script to Jenkinsfile](#21-push-add-your-push-script-to-jenkinsfile)
+  - [22. Deploy: Transfer some variables to the remote machine](#22-deploy-transfer-some-variables-to-the-remote-machine)
+  - [23. Deploy: Deploy your application on the remote machine manually](#23-deploy-deploy-your-application-on-the-remote-machine-manually)
+  - [24. Deploy: Transfer the deployment script to the remote machine](#24-deploy-transfer-the-deployment-script-to-the-remote-machine)
+  - [25. Deploy: Execute the deploy script in the remote machine](#25-deploy-execute-the-deploy-script-in-the-remote-machine)
+  - [26. Deploy: Add your deploy script to Jenkinsfile](#26-deploy-add-your-deploy-script-to-jenkinsfile)
+  - [27. Create a Git Repository to store your scripts and the code for the app](#27-create-a-git-repository-to-store-your-scripts-and-the-code-for-the-app)
+  - [28. Create the Jenkins Pipeline. Finally!](#28-create-the-jenkins-pipeline-finally)
+  - [29. Modify the path when mounting Docker volumes](#29-modify-the-path-when-mounting-docker-volumes)
+  - [30. Create the Registry Password in Jenkins](#30-create-the-registry-password-in-jenkins)
+  - [31. Add the private ssh key to the Jenkins container](#31-add-the-private-ssh-key-to-the-jenkins-container)
+  - [32. Add post actions to Jenkinsfile](#32-add-post-actions-to-jenkinsfile)
+  - [33. Execute your Pipeline manually](#33-execute-your-pipeline-manually)
+  - [34. Notes on Git Hooks](#34-notes-on-git-hooks)
+  - [35. Create a Git Hook to automatically trigger your Pipeline](#35-create-a-git-hook-to-automatically-trigger-your-pipeline)
+  - [36. Start the CI/CD process by committing new code to Git!](#36-start-the-cicd-process-by-committing-new-code-to-git)
 
 ## Section 1: Resources for this course
 
@@ -4518,6 +4553,428 @@ pipeline {
 }
 ```
 ![Image](images/post_actions_2.png)
+
+<div align="right">
+  <strong>
+    <a href="#table-of-contents" style="text-decoration: none;">↥ Back to top</a>
+  </strong>
+</div>
+
+---
+
+## Section 15: CI/CD + Jenkins Pipeline + Docker +  Maven
+### 1. Introduction
+![Image](images/section_15_1.png)
+- In this section, we will build a **real CI/CD pipeline**.
+- We will use **Jenkinsfile**, **Jenkins**, **Docker**, and **Maven**.
+- Jenkins will **build a Docker image**.
+- Jenkins will **test the Docker image**.
+- If the tests pass, Jenkins will **push the image to a registry**.
+- After that, the image will be **deployed to production**.
+- We will work with a **Maven application**.
+- You will learn **all the steps** needed to complete this process.
+
+### 2. Notes on Docker in Docker
+- Docker-in-Docker (**DinD**) is good for learning but not for production.
+- Use **Kubernetes agents** or **external clusters** for real projects.
+- Allows **build and run Docker containers locally**.
+
+**Docker Installation**  
+- Install Docker as **root** using official docs.
+- Adds **GPG key** and **repository**.
+- Installs **docker-ce** and **docker-compose**.
+- Switch back to **jenkins user**. 
+
+```dockerfile
+# FROM jenkins/jenkins
+##############################################
+# The updated Ansible installation goes here #
+##############################################
+ 
+# Docker installation starts here
+ 
+USER root
+ 
+# Add Docker's official GPG key:
+RUN apt-get update && apt-get install ca-certificates curl && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc
+ 
+# Add the repository to Apt sources:
+RUN echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+ 
+RUN apt-get update && apt-get install docker-ce docker-compose-plugin -y
+ 
+USER jenkins
+```
+💡 Note: Don't forget to include the updated Ansible installation
+
+### 3. Learn how to install Docker inside of a Docker Container
+1. Start all containers using `docker-compose start`.
+2. Stop the Git server because it uses many resources.
+3. Enter the Jenkins container.
+4. Check that Docker is not installed inside Jenkins.
+   ![Image](images/section_15_2.png)
+5. Explain why Docker is needed inside Jenkins:
+   - Jenkins will build Docker images and run Docker commands.
+6. Create a new **Dockerfile** inside the pipeline directory.
+7. Use a Debian-based Dockerfile because Jenkins runs on Debian.
+8. Install required packages, then install **Docker** and **docker-compose**.
+9.  Add the Jenkins user to the Docker group.
+10. Switch back to the Jenkins user after installation.
+11. Update the **docker-compose.yml** file:
+    - Use the new Docker image.
+    - Set the build context to the pipeline directory.
+12. Mount `/var/run/docker.sock` into the Jenkins container.
+13. Build the new image using `docker-compose build`.
+14. Recreate the Jenkins container using `docker-compose up -d`.
+15. Enter the Jenkins container again.
+16. Try running `docker ps` and see a permission error.
+17. Fix permissions by changing the owner of `docker.sock` to Jenkins user (UID 1000).
+18. Enter the Jenkins container again.
+19. Run `docker ps` successfully.
+20. Jenkins can now run Docker commands and see host containers.
+21. Docker inside Docker is working and ready to build images.
+
+```dockerfile
+FROM jenkins/jenkins
+USER root
+
+RUN apt-get update && apt-get install python3-pip -y
+
+# New lines to set up a virtual environment
+####
+ENV ANSIBLE_VENV=/ansible_venv
+RUN mkdir $ANSIBLE_VENV && \
+    chown jenkins:jenkins $ANSIBLE_VENV && \
+    apt-get install python3-venv -y
+####
+
+USER jenkins
+
+# Activate the virtual environment
+RUN python3 -m venv $ANSIBLE_VENV
+
+# Use the venv to install Ansible
+RUN $ANSIBLE_VENV/bin/pip3 install ansible
+
+# Ensure the Ansible binary is accessible
+ENV PATH=$PATH:$ANSIBLE_VENV/bin
+
+##################
+# Install Docker #
+##################
+USER root
+
+# Add Docker's official GPG key:
+RUN apt-get update && apt-get install ca-certificates curl && \
+    install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+RUN echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+RUN apt-get update && apt-get install docker-ce docker-compose-plugin -y
+
+USER jenkins
+```
+
+### 4. Define the steps for your Pipeline
+1. Use a basic pipeline file as a skeleton.
+2. The pipeline has four stages:
+   - Build
+   - Test
+   - Push
+   - Deploy
+3. For now, each stage only uses simple `echo` commands.
+4. The real work will be done using bash or shell scripts.
+5. Each stage will call a script to execute tasks.
+6. This keeps the Jenkinsfile simple and clean.
+7. Copy the pipeline content.
+8. Go to the terminal.
+9. Navigate to the pipeline directory.
+10. Create a **Jenkinsfile** at the same level as the Dockerfile.
+11. Paste the pipeline content into the Jenkinsfile.
+12. Save the file.
+13. Now the directory contains:
+    - Dockerfile
+    - Jenkinsfile
+14. These files will be used later in the project.
+
+```groovy
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                sh '''
+                    echo build
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'echo test'
+            }
+        }
+
+        stage('Push') {
+            steps {
+                sh 'echo push'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'echo deploy'
+            }
+        }
+    }
+}
+``` 
+### 5. Notes on building a jar with docker
+**Ensure Maven Version Consistency**
+
+1. Always use the latest stable version of Maven.
+2. Use the same Maven version as in the Jenkins & Maven section.
+3. Example:
+   - If Jenkins uses Maven **3.9.9**, use the Docker image `maven:3.9.9`.
+4. This avoids compatibility and version issues.
+
+**Optional: Fix Memory Errors**
+
+1. You may see this error:
+   - `library initialization failed - unable to allocate file descriptor table - out of memory`
+2. Fix it by adding this flag to the Docker run command:
+   ```bash
+   --ulimit nofile=65536:65536
+This increases the file descriptor limit, preventing system resource allocation issues.
+
+### 6. Build: Create a Jar for your Maven App using Docker
+1. Go to the Jenkins working directory.
+2. Enter the `pipeline` folder.
+3. Verify that `Dockerfile` and `Jenkinsfile` exist.
+4. Go one level back and locate the Java Maven application downloaded from Git.
+5. Copy the Java project into the `pipeline` folder.
+6. Name the new folder `java-app`.
+7. Enter the `java-app` folder and verify all project files exist.
+8. Remove the `.git` directory to avoid future Git conflicts.
+9. Go back to the pipeline root level.
+10. Create a `jenkins` folder to store Jenkins-related files.
+11. Inside `jenkins`, create a `build` subfolder for build scripts.
+
+**Use Maven with Docker**
+
+12. Choose a Maven Docker image (example: `maven:3-alpine`).
+13. Pull the Maven image using `docker pull`.
+14. Verify the image exists using `docker images`.
+
+**Build the JAR Manually (Interactive)**
+
+15. Run a Maven container with:
+    - The project folder mounted to `/app`
+    - Interactive mode enabled
+16. Enter `/app` inside the container.
+17. Run `mvn package` to build the project.
+18. Maven downloads dependencies and builds the JAR.
+
+**Persist Maven Dependencies**
+
+19. Maven stores dependencies in `/root/.m2`.
+20. Mount `/root/.m2` as a volume to persist downloads.
+21. Exit the container and confirm dependencies remain on the host.
+
+**Automate the Build (Non-Interactive)**
+
+22. Use Docker with:
+    - Mounted project folder (`/app`)
+    - Working directory set to `/app`
+    - No interactive shell
+23. Run Maven automatically using:
+    - `mvn -B -DskipTests clean package`
+24. Docker builds the JAR without entering the container manually.
+25. Dependencies are reused from `/root/.m2`.
+
+**Verify the Result**
+
+26. Check `java-app/target/` on the host.
+27. Confirm the JAR file was created.
+28. Delete the JAR and run the command again.
+29. The JAR is rebuilt without re-downloading dependencies.
+
+**Result**
+
+30. You can now build a Java JAR using Docker and Maven.
+31. The process is fast, repeatable, and ready for Jenkins pipelines.
+    
+### 7. Build: Write a bash script to automate the Jar creation
+**Build the JAR Using a Jenkins Bash Script**
+```groovy
+#!/bin/bash
+
+echo "***************************"
+echo "** Building jar ***********"
+echo "***************************"
+
+WORKSPACE=/home/jenkins/jenkins-data/jenkins_home/workspace/pipeline-docker-maven
+
+docker run --rm  -v  $WORKSPACE/java-app:/app -v /root/.m2/:/root/.m2/ -w /app maven:3.9.9 "$@"
+```
+
+1. Go to the same level as the Java application.
+2. Execute the build script using the full path:
+   - `jenkins/build`
+3. If no parameters are passed, the script may fail.
+4. Pass the required parameters to build the JAR.
+5. Run the script again with parameters.
+6. The script builds a new JAR successfully.
+7. The JAR is saved inside:
+   - `java-app/target`
+8. Using a Bash script is easier than writing long Docker commands.
+9. Bash scripts help automate the build process.
+10. You only need to run the script and pass parameters.
+
+**Test the Script**
+
+11. Verify the JAR exists in `java-app/target`.
+12. Delete the existing JAR file.
+13. Confirm the JAR is removed.
+14. Execute the build script again.
+15. Check `java-app/target` folder.
+16. The JAR is created again.
+
+**Result**
+
+17. The build process runs correctly using the script.
+18. You have automated the JAR build using a simple Bash script.
+19. This approach is ready to be used in Jenkins pipelines.
+
+### 8. Notes on creating the Dockerfile
+
+1. In the next step, a Dockerfile will be created.
+2. Do NOT use `openjdk` because it is deprecated.
+3. Use a supported Java image instead.
+
+**Recommended Java Images**
+
+4. Available alternatives include:
+   - `amazoncorretto`
+   - `eclipse-temurin`
+   - `ibm-semeru-runtimes`
+   - `ibmjava`
+   - `sapmachine`
+5. In this course, **amazoncorretto** is used.
+
+**Match Java and Maven Versions**
+
+6. The Java version must match the Maven build version.
+7. Check the Java version used by Maven with:
+   ```bash
+   docker run --rm maven:3.9.9 mvn -version | grep Java
+   ```
+**Example output:**
+
+Java version: 21.0.6, vendor: Eclipse Adoptium, runtime: /opt/java/openjdk
+From this, you can see that the correct Docker image to use would be:
+amazoncorretto:21.0.6 🎯.
+
+That's what you will use in your FROM instruction.
+
+### 9. Build: Create a Dockerfile and build an image with your Jar
+1. The goal is to create a Docker image using the JAR built by Maven.
+2. A Docker image with Java installed is required.
+3. Search for a Java Docker image.
+4. Choose `openjdk:8-jre-alpine` for this exercise.
+   - It includes Java.
+   - It is small and lightweight (Alpine).
+
+**Create the Dockerfile**
+
+5. Go to the Jenkins directory.
+6. Enter the `build` folder.
+7. Create a new file called `Dockerfile-Java`.
+8. Start the Dockerfile with:
+   - `FROM openjdk:8-jre-alpine`
+9. Create a directory `/app` inside the container.
+10. Copy the JAR file from the host into the container:
+    - Copy `*.jar` to `/app/app.jar`
+11. Define the command to run the JAR:
+    - Use `java -jar /app/app.jar`
+
+**Prepare the JAR File**
+
+12. The JAR file must exist in the same directory as the Dockerfile.
+13. Copy the JAR from:
+    - `java-app/target`
+14. Paste it into the `build` directory.
+
+**Build the Docker Image**
+
+15. Run the Docker build command.
+16. Specify the Dockerfile and image tag (example: `test`).
+17. Use `.` as the build context.
+18. Docker downloads the base image if needed.
+19. The image is built successfully.
+
+**Verify the Image**
+
+20. List Docker images and confirm the image exists.
+21. Run a temporary container with an interactive shell.
+22. Go to `/app` inside the container.
+23. Confirm the JAR file is present.
+
+**Run the Application**
+
+24. Exit the container.
+25. Run the image in detached mode.
+26. The container executes the JAR automatically.
+27. Check container logs.
+28. Confirm the output (example: `hello world`).
+
+## Result
+
+29. The Java application is successfully dockerized.
+30. The Docker image contains the JAR and runs it automatically.
+
+### 10. Build: Create a Docker Compose file to automate the Image build process
+### 11. Build: Write a bash script to automate the Docker Image creation process
+### 12. Build: Add your scripts to the Jenkinsfile
+### 13. Test: Learn how to test your code using Maven and Docker
+### 14. Test: Create a bash script to automate the test process
+### 15. Test: Add your test script to Jenkinsfile
+### 16. Create a remote machine to deploy your containerized app
+### 17. Push: Create your own Docker Hub account
+### 18. Push: Create a Repository in Docker Hub
+### 19. Push: Learn how to Push/Pull Docker images to your Repository
+### 20. Push: Write a bash script to automate the push process
+### 21. Push: Add your push script to Jenkinsfile
+### 22. Deploy: Transfer some variables to the remote machine
+### 23. Deploy: Deploy your application on the remote machine manually
+### 24. Deploy: Transfer the deployment script to the remote machine
+### 25. Deploy: Execute the deploy script in the remote machine
+### 26. Deploy: Add your deploy script to Jenkinsfile
+### 27. Create a Git Repository to store your scripts and the code for the app
+### 28. Create the Jenkins Pipeline. Finally!
+### 29. Modify the path when mounting Docker volumes
+### 30. Create the Registry Password in Jenkins
+### 31. Add the private ssh key to the Jenkins container
+### 32. Add post actions to Jenkinsfile
+### 33. Execute your Pipeline manually
+### 34. Notes on Git Hooks
+### 35. Create a Git Hook to automatically trigger your Pipeline
+### 36. Start the CI/CD process by committing new code to Git!
 
 <div align="right">
   <strong>
