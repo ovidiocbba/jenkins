@@ -5816,16 +5816,451 @@ docker push ricardoandre97/$IMAGE:$BUILD_TAG
    - This approach helps you design real deployment workflows.
 
 ### 26. Deploy: Add your deploy script to Jenkinsfile
+1. In the previous video, a script was created and executed to deploy the application on a remote machine.
+
+2. Now, the script needs to be copied and added to the Jenkinsfile.
+
+3. To deploy the application, only one command line is required.
+
+4. Open the Jenkinsfile.
+
+5. Find the **deploy stage**.
+
+6. Paste the deployment command into the deploy stage.
+
+7. When the deploy stage starts, this command will run automatically.
+
+8. The application will be deployed.
+
+9. Save the Jenkinsfile.
+
+![Image](images/section_15_7.png)
+
 ### 27. Create a Git Repository to store your scripts and the code for the app
+1. Create a new Git repository on the Git server.
+
+2. Log in using the root user and password.
+
+3. Create a new project under the **jenkins** group.
+   - Example project name: `pipeline-maven`
+
+4. Open the terminal.
+
+5. Go to the `jenkins-data` folder.
+
+6. Go to the existing `pipeline` folder.
+
+7. Initialize the Git repository:
+   - Run `git init`
+
+8. Follow the instructions provided by Git to add the remote repository.
+   - Add the server URL with user credentials (username and password).
+   - If the user is unknown, check `.git/config`.
+
+9. Check repository status:
+   - Run `git status`
+
+10. Review files:
+    - Dockerfile and Jenkinsfile are detected.
+    - Decide not to upload the Dockerfile.
+
+11. Add only required files:
+    - Jenkinsfile
+    - `java-app` folder
+    - `jenkins` folder
+
+12. Add files to Git:
+    - Run `git add`
+
+13. Commit the changes:
+    - Run `git commit`
+
+14. Push the changes:
+    - Run `git push origin master`
+
+15. Fix permission error:
+    - Go to Repository → Settings → Members
+    - Add the user with **Maintainer** permissions
+
+16. Fix port error:
+    - Edit `.git/config`
+    - Add the correct port (e.g. `:8090`)
+
+17. Push again:
+    - Now the push works correctly
+
+18. Verify the repository:
+    - Jenkinsfile is visible
+    - Jenkins folder is uploaded
+    - Scripts are uploaded
+    - Java application source code is uploaded
+
 ### 28. Create the Jenkins Pipeline. Finally!
+1. Create a new Jenkins pipeline project.
+   - Example name: `pipeline-docker-maven`
+   - Select **Pipeline** type.
+
+2. In the pipeline configuration, choose **Pipeline script from SCM**.
+
+3. Select **Git** as the SCM.
+
+4. Copy the repository URL from the `pipeline-maven` project.
+
+5. Paste the repository URL into Jenkins.
+   - Use internal communication (Git on port 80).
+
+6. Add Git credentials.
+   - Select a valid user (e.g. Ricardo).
+   - Use the `master` branch.
+
+7. Set the script path:
+   - `Jenkinsfile`
+
+8. Save the pipeline configuration.
+
+9. Understand Jenkins workspaces:
+   - Go to `jenkins-home` on the Jenkins machine.
+   - Open the `workspace` folder.
+
+10. Before the first build:
+    - The workspace for this job does not exist.
+
+11. Run the pipeline for the first time:
+    - Jenkins creates a workspace for the job.
+    - The repository code is downloaded into this workspace.
+
+12. The build may fail:
+    - Some steps are still missing.
+
+13. Check the console output:
+    - Verify that the Git repository was cloned successfully.
+
+14. Important concept:
+    - All actions happen inside the workspace:
+      - Code download
+      - Script execution
+      - Pipeline steps
+
+15. Workspace path:
+    - `jenkins-home/workspace/<job-name>`
+
 ### 29. Modify the path when mounting Docker volumes
+1. Modify the build and test scripts.
+
+2. Remember that everything runs inside the Jenkins pipeline workspace.
+
+3. Go to the Jenkins data pipeline folder.
+
+4. Search recursively for `PWD`.
+   - Two results are found:
+     - build folder
+     - test folder
+
+5. Identify the issue:
+   - Docker uses the Docker socket.
+   - `PWD` points to the host path, not the container path.
+
+6. Fix the issue:
+   - Use the full workspace path instead of `PWD`.
+
+7. Copy the full workspace path of the pipeline.
+
+8. Update the build script:
+   - Create a variable called `workspace`.
+   - Assign the full workspace path to this variable.
+   - Replace `PWD` with `workspace`.
+
+9. Update the test script:
+   - Create the same `workspace` variable.
+   - Replace `PWD` with `workspace`.
+
+10. Save both scripts.
+
+11. Check Git status:
+    - Both build and test scripts are modified.
+
+12. Add changes to Git:
+    - `git add build test`
+
+13. Commit the changes:
+    - Use a message like: "Fix workspace path for job execution"
+
+14. Push changes to the repository:
+    - `git push`
+
 ### 30. Create the Registry Password in Jenkins
+1. Identify the problem:
+   - The push scripts use a `PASS` environment variable.
+   - This variable is not defined in Jenkins.
+
+2. Create a Jenkins credential:
+   - Go to **Jenkins → Credentials**.
+   - Click **Add Credentials**.
+   - Select **Secret Text**.
+   - Enter the Docker Hub password.
+   - Set an ID (example: `RegistryPass`).
+   - Save the credential.
+
+3. Update the Jenkinsfile:
+   - Open the Jenkinsfile.
+   - Add an `environment` block.
+   - Define the variable used in the scripts.
+
+4. Add the credential to the environment:
+   - Set `PASS = credentials('RegistryPass')`.
+
+5. Save the Jenkinsfile.
+
+6. Check Git status:
+   - Jenkinsfile is modified.
+
+7. Commit the changes:
+   - `git add Jenkinsfile`
+   - `git commit -m "Add registry credentials to Jenkinsfile"`
+
+8. Push the changes:
+   - `git push`
+
+9. Verify the update:
+   - Refresh the Git repository.
+   - Confirm the new commit and updated Jenkinsfile.
+
 ### 31. Add the private ssh key to the Jenkins container
+1. Identify the requirement:
+   - The deploy script uses a private key to connect to a remote server.
+   - The script runs inside the Jenkins container.
+
+2. Identify the problem:
+   - The key file does not exist inside the Jenkins container.
+   - This causes deployment errors.
+
+3. Copy the key file into the Jenkins container:
+   - Use `docker cp` to copy the key.
+   - Copy it to the expected path (e.g. `/opt/prod`).
+
+4. Access the Jenkins container:
+   - Use `docker exec` to enter the container.
+   - Go to the `/opt` directory.
+   - Verify the key file exists.
+
+5. Verify SSH connection:
+   - Run: `ssh -i prod user@remote-server`
+   - Example server: `linuxfacilito.online`
+
+6. Confirm host authenticity:
+   - Type `yes` when prompted.
+
+7. Validate success:
+   - SSH connection works correctly.
+   - No key-related errors.
+
+8. Important note:
+   - Always copy the key file to the correct location inside the Jenkins container.
+   - Otherwise, the pipeline will fail during deployment.
+
 ### 32. Add post actions to Jenkinsfile
+1. Add post actions to the Jenkinsfile.
+
+2. Purpose of post actions:
+   - Record JUnit test reports.
+   - Archive build artifacts when the job is successful.
+
+3. Open the Jenkinsfile.
+
+4. Add a `post` block to the **build stage**:
+   - Use `success` instead of `always`.
+   - Archive the generated JAR artifacts.
+
+5. Configure artifact location:
+   - Artifacts path: `java-app/target/*.jar`
+
+6. Add a `post` block to the **test stage**:
+   - Use `always`.
+
+7. Configure JUnit report recording:
+   - JUnit reports path:
+     - `java-app/target/surefire-reports/*.xml`
+
+8. Save the Jenkinsfile.
+
+9. Check Git status:
+   - Jenkinsfile is modified.
+
+10. Commit the changes:
+    - `git add Jenkinsfile`
+    - `git commit -m "Add post actions to Jenkinsfile"`
+
+11. Push the changes:
+    - `git push`
+
+12. Verify in the Git repository:
+    - Review the commit history.
+    - Confirm artifact archiving and JUnit report configuration.
+
 ### 33. Execute your Pipeline manually
+1. Run the pipeline manually:
+   - Click **Build Now** in Jenkins.
+
+2. Check the console output:
+   - The pipeline fails with a **permission denied** error.
+
+3. Fix the Docker permission issue:
+   - Go to the terminal (outside the containers).
+   - Run: `sudo chown 1000 -R /var/run/docker.sock`
+   - Enter the password.
+
+4. Run the pipeline again:
+   - Click **Build Now** one more time.
+
+5. Monitor the execution:
+   - The JAR file is built successfully.
+   - The Docker image is created.
+   - The image tag uses the Jenkins build number.
+   - The tests run successfully.
+
+6. Push the Docker image:
+   - Docker login succeeds.
+   - The image is tagged.
+   - The image is pushed to Docker Hub.
+
+7. Deploy the application:
+   - The deployment process starts.
+   - The remote machine pulls the image.
+   - The container is created successfully.
+
+8. Verify Jenkins results:
+   - The pipeline finishes successfully.
+   - Artifacts are archived.
+   - The pipeline status is successful.
+
+9. Verify on the remote machine:
+   - Run `docker ps -la`.
+   - Confirm the container was recreated recently.
+   - Verify the image tag matches the pipeline execution number.
+
+10. Check container logs:
+    - Run `docker logs <container-name>`.
+    - Output shows **Hello World!**
+
+11. Final recap:
+    - Code is cloned from Git.
+    - JAR is built.
+    - Docker image is created.
+    - Tests are executed.
+    - Image is pushed to Docker registry.
+    - Image is deployed to the remote server.
+
+12. Result:
+    - The full CI/CD pipeline works as expected.
+
 ### 34. Notes on Git Hooks
+1️⃣ Do not use Jenkins crumbs ❌—Jenkins API tokens will work just fine.
+
+2️⃣ When creating the custom_hooks directory, first locate your @hashed repo path by clicking on your GitLab project from the UI. (Refer to Lecture 119 for step-by-step instructions).
+
 ### 35. Create a Git Hook to automatically trigger your Pipeline
+1. Identify the problem:
+   - The pipeline works, but it must be triggered manually.
+
+2. Goal:
+   - Trigger the Jenkins pipeline automatically when developers push code to Git.
+
+3. Solution:
+   - Create a Git hook in the Git repository.
+
+4. Enter the Git container:
+   - Access the GitLab container using `bash`.
+
+5. Navigate to the repositories path:
+   - Go to `/var/opt/gitlab/git-data/repositories/jenkins`.
+
+6. Locate the project repository:
+   - Open the `pipeline-maven` repository.
+
+7. Create and access the custom hooks directory:
+   - Navigate to the `custom_hooks` folder.
+
+8. Copy the hook script:
+   - Copy the `post-receive` script from the DSL project.
+   - Paste it into the `custom_hooks` directory.
+
+9. Modify the hook script:
+   - Update the Jenkins job URL.
+   - Replace the old job name with `pipeline-docker-maven`.
+
+10. Save the script.
+
+11. Fix permissions:
+    - Change ownership recursively to `git:git` for `custom_hooks`.
+
+12. Result:
+    - Every push to the Git repository triggers the Jenkins pipeline.
+    - The full CI/CD process starts automatically.
+
 ### 36. Start the CI/CD process by committing new code to Git!
+1. Verify the current application:
+   - Connect to the remote machine.
+   - Run `docker logs maven-app`.
+   - The app prints: **"Hello World!"**
+
+2. Goal:
+   - Simulate a code change.
+   - Automatically trigger the CI/CD pipeline.
+   - Deploy the updated application.
+
+3. Modify the source code:
+   - Go to `jenkins-data/pipeline`.
+   - Open the `java-app` folder.
+   - Search for `"Hello World!"`.
+
+4. Update application message:
+   - Edit `App.java`.
+   - Change the message to: `"Hello from Pipeline!"`.
+
+5. Update test code:
+   - Edit `Test.java`.
+   - Update the expected value to: `"Hello from Pipeline!"`.
+
+6. Verify code changes:
+   - Run `git status`.
+   - Confirm source files were modified.
+
+7. Commit and push changes:
+   - `git add src/`
+   - `git commit -m "Update application message"`
+   - `git push`
+
+8. Identify an issue:
+   - The pipeline is not triggered.
+   - Reason: typo in hooks directory name.
+
+9. Fix Git hook directory:
+   - Rename `custom_hook` to `custom_hooks`.
+
+10. Trigger the pipeline again:
+    - Create an empty commit:
+      - `git commit --allow-empty -m "Test trigger"`
+    - Push the commit:
+      - `git push`
+
+11. Pipeline execution:
+    - Git hook triggers Jenkins automatically.
+    - Jenkins pulls the latest code.
+    - Builds the JAR with the new message.
+    - Builds a new Docker image.
+    - Runs tests successfully.
+    - Pushes the image to Docker Hub.
+    - Deploys the image to the remote machine.
+
+12. Verify deployment:
+    - On the remote machine, run:
+      - `docker ps -la`
+      - `docker logs maven-app`
+    - Output shows: **"Hello from Pipeline!"**
+
+13. Final result:
+    - A simple Git push triggered the full CI/CD workflow.
+    - The application was automatically rebuilt, tested, and deployed.
 
 <div align="right">
   <strong>
