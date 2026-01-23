@@ -4949,21 +4949,872 @@ That's what you will use in your FROM instruction.
 30. The Docker image contains the JAR and runs it automatically.
 
 ### 10. Build: Create a Docker Compose file to automate the Image build process
+1. **Goal**
+   - Learn how to create a Docker Compose file.
+   - Use it to build a Docker image more easily than using `docker build`.
+
+2. **Create the Docker Compose file**
+   - Create a file called `docker-compose-build.yml`.
+   - Place it in the same folder as:
+     - `Dockerfile.Java`
+     - `mvn.sh`
+   - This is inside the Jenkins pipeline build directory.
+
+3. **Set Docker Compose version**
+   - Start the file with version **3**.
+
+4. **Define services**
+   - Add a `services` section.
+   - Create one service called `app` (name can be anything).
+
+5. **Define the image name**
+   - Set the image name to `app`.
+   - Add a tag using `BUILD_TAG`.
+   - Example: `app:${BUILD_TAG}`
+   - `BUILD_TAG` is an environment variable from Jenkins.
+   - It helps version images (app:1, app:2, app:3).
+
+6. **Configure the build**
+   - Use the `build` property.
+   - Set:
+     - `context` to the current directory.
+     - `dockerfile` to `Dockerfile.Java`.
+   - This tells Docker where the Dockerfile is.
+
+7. **Build the image with Docker Compose**
+   - Run: `docker compose -f docker-compose-build.yml build`
+   - If `BUILD_TAG` is not set, the build will fail.
+
+8. **Set BUILD_TAG manually (for testing)**
+   - Example: `export BUILD_TAG=1`
+   - Run the build command again.
+   - The image `app:1` is created.
+
+9. **Check the image**
+   - Run: `docker images | grep -w app`
+   - You will see `app:1`.
+
+10. **Create a new version**
+    - Change `BUILD_TAG` to another value (example: 2).
+    - Build again.
+    - Now you have `app:2`.
+
+11. **Important note**
+    - The same JAR file is copied now, so images look the same.
+    - In the future, the JAR will change dynamically.
+![Image](images/section_15_3.png)
+
 ### 11. Build: Write a bash script to automate the Docker Image creation process
+1. **Goal**
+   - Automate all the manual steps done before.
+   - Use a script to make the process easy and simple.
+
+2. **Go to the pipeline folder**
+   - Path: `jenkins/data/pipeline`
+   - This folder contains:
+     - Jenkins folder
+     - Dockerfile
+     - Jenkinsfile
+   - Everything runs relative to this path.
+
+3. **Copy the JAR file**
+   - Always copy the new JAR file first.
+   - The JAR is generated in `java-app/target`.
+   - Copy it to `jenkins/build`.
+   - This is required because the Dockerfile uses this JAR.
+
+4. **Move to the build folder**
+   - Change directory to `jenkins/build`.
+   - This folder contains:
+     - Dockerfile
+     - Docker Compose file
+
+5. **Build the image with Docker Compose**
+   - Run `docker compose -f docker-compose-build.yml build`
+   - You can add `--no-cache` to avoid using cache.
+
+6. **Create a build script**
+   - Create a new file: `build.sh` in `jenkins/build`.
+   - Start the script with `#!/bin/bash`.
+
+7. **Add JAR copy command to the script**
+   - Use `cp -f java-app/target/*.jar jenkins/build`.
+   - This copies the new JAR into the build folder.
+
+8. **Add messages to the script**
+   - Use `echo` to show messages like:
+     - "Building Docker Image"
+   - This helps to see what is happening.
+
+9. **Add Docker Compose build command**
+   - Change directory to `jenkins/build`.
+   - Run Docker Compose build using the build file.
+   - This creates a new Docker image.
+
+10. **Make the script executable**
+    - Run: `chmod +x build.sh`
+
+11. **Run the script**
+    - Execute `./build.sh`
+    - All steps run automatically:
+      - Copy JAR
+      - Build Docker image
+
+12. **Result**
+    - The full build process is automated.
+    - You only need to run one script.
+```groovy
+#!/bin/bash
+
+# Copy the new jar to the build location
+cp -f java-app/target/*.jar jenkins/build/
+
+echo "****************************"
+echo "** Building Docker Image ***"
+echo "****************************"
+
+cd jenkins/build/ && docker-compose -f docker-compose-build.yml build --no-cache
+```
 ### 12. Build: Add your scripts to the Jenkinsfile
+1. **Goal**
+   - Use two scripts to create a new Docker image.
+   - The image is built using the application code.
+
+2. **Create the JAR file**
+   - Use the script `maven.sh`.
+   - This script runs Maven inside Docker.
+   - It builds a JAR file.
+   - The JAR is created in the `target` folder.
+
+3. **Build the Docker image**
+   - Use the script `build.sh`.
+   - This script builds a Docker image.
+   - It uses the JAR created in the previous step.
+
+4. **How the Dockerfile works**
+   - The Dockerfile copies the JAR into the image.
+   - The image always uses the latest generated JAR.
+
+5. **Include this process in Jenkins**
+   - Open the `Jenkinsfile`.
+
+6. **First Jenkins step: build the JAR**
+   - In the build stage, run the `maven.sh` script.
+   - This ensures the code builds correctly after every push.
+
+7. **Second Jenkins step: build the Docker image**
+   - Run the `build.sh` script.
+   - This creates a new Docker image using the JAR.
+
+8. **Save the Jenkinsfile**
+   - Now Jenkins has the full process defined.
+
+9. **Final result**
+   - Jenkins builds the JAR.
+   - Jenkins builds the Docker image.
+   - Everything is done with only two script commands.
+
+![Image](images/section_15_4.png)
+
 ### 13. Test: Learn how to test your code using Maven and Docker
+1. Go to the project folder  
+   - Path: `jenkins-data/pipeline`
+   - Inside it, there is a folder called `java-app`
+   - This folder has the Java code.
+
+2. Open the Jenkins build and Maven script  
+   - The Jenkinsfile runs at the same level as `java-app`.
+
+3. Use the correct path  
+   - The command uses `PWD/java-app`
+   - This means the command runs where the Jenkinsfile is.
+
+4. Run Maven tests  
+   - Use this command: `mvn test`
+   - This is how Maven runs tests.
+
+5. Check before running tests  
+   - Go to `java-app/target`
+   - There is no `surefire-reports` folder yet.
+   - This folder is created only after tests run.
+
+6. Run the test command  
+   - Run `mvn test`
+   - Maven scans the project and runs tests.
+
+7. Check the result  
+   - The build is successful.
+   - Go again to `java-app/target`.
+
+8. View test reports  
+   - Now you can see the `surefire-reports` folder.
+   - Inside it are the test results.
+
+9. Conclusion  
+   - Testing with Docker is simple.
+   - Just run the same command but use `mvn test`.
+
 ### 14. Test: Create a bash script to automate the test process
+1. Go to the pipeline folder  
+   - You are at the same level as the `Jenkinsfile`.
+
+2. Create a new directory  
+   - Inside the `Jenkins` folder, create a folder called `test`.
+   - The path is: `Jenkins/test`.
+
+3. Create a test script  
+   - Copy the Maven script from the build folder.
+   - Paste it into the `test` directory.
+
+4. Edit the script  
+   - Add a message like: `echo testing the code`.
+   - Keep the Maven test command.
+   - Save the file.
+
+5. Give execute permissions  
+   - Make the script executable.
+   - The file turns green (executable).
+
+6. Go back to the Jenkinsfile level  
+   - Make sure you are at the same level as the `Jenkinsfile`.
+
+7. Run the test script  
+   - Execute the script from the terminal.
+   - Example: `Jenkins/test/maven test`
+   - The name is just an example.
+
+8. Tests run automatically  
+   - The script runs Maven tests.
+   - The code is tested with one command.
+
+9. Important note  
+   - Always run scripts at the Jenkinsfile level.
+   - Jenkins uses relative paths from this location.
+
+10. Conclusion  
+   - You now have a script to automate testing.
+   - This makes testing simple and automatic.
+
 ### 15. Test: Add your test script to Jenkinsfile
+1. Open the Jenkinsfile  
+   - This file controls the Jenkins pipeline.
+
+2. Identify the test script  
+   - You already created a script to test the code.
+   - Copy the command that runs this script.
+
+3. Edit the test stage  
+   - Go to the **test** stage in the Jenkinsfile.
+   - Modify this step.
+
+4. Use the `sh` command  
+   - Add `sh` to execute the test script.
+   - Paste the test command after `sh`.
+
+5. Review the pipeline stages  
+   - **Build stage**:
+     - Package the JAR file.
+     - Create a Docker image using the JAR.
+   - **Test stage**:
+     - Run the test script.
+     - Check if the code works correctly.
+
+6. Keep the test stage simple  
+   - The test stage runs only one script.
+   - This script tests the code.
+
+7. Conclusion  
+   - The test script is now part of the Jenkins pipeline.
+   - Jenkins will test the code automatically.
+
+![Image](images/section_15_5.png)
+
 ### 16. Create a remote machine to deploy your containerized app
+1. Create a new virtual machine  
+   - This machine will be the **target / production machine**.
+   - You will deploy the application container there.
+   - You can use VirtualBox or AWS.
+
+2. Prepare the virtual machine  
+   - Install **Docker**.
+   - Install **Docker Compose**.
+   - Make sure you can connect using **SSH** (Putty or terminal).
+
+3. Create a remote user  
+   - Create a new user on the production machine.
+   - Example: `prod-user` or `jenkins`.
+   - This user will be used for deployment.
+
+4. Generate SSH keys on the Jenkins machine  
+   - Use `ssh-keygen`.
+   - Give the key a name like `prod`.
+   - Press Enter for all questions.
+   - Two files are created:
+     - `prod` (private key)
+     - `prod.pub` (public key)
+
+5. Copy the public key  
+   - Open the `prod.pub` file.
+   - Copy its content.
+
+6. Configure SSH on the production machine  
+   - Log into the production machine.
+   - Switch to the new user:
+     - `sudo su prod-user`
+   - Go to the home directory:
+     - `/home/prod-user`
+
+7. Create SSH configuration  
+   - Create a `.ssh` directory.
+   - Set permissions to `700`.
+   - Create a file called `authorized_keys`.
+   - Paste the public key content inside this file.
+   - Save the file.
+   - Change permissions to `400`.
+
+8. Exit the production machine  
+   - Log out until you return to your local or Jenkins machine.
+
+9. Prepare the private key file  
+   - Open the `prod` file (private key).
+   - Paste its content into a plain text file.
+   - Save it as `prod`.
+   - Change permissions to `400`.
+
+10. Connect using SSH key  
+    - Use this command:
+      - `ssh -i prod prod-user@IP_ADDRESS`
+    - Replace `IP_ADDRESS` with the VM IP.
+    - No password is required.
+
+11. Verify connection  
+    - You are logged into the production machine.
+    - SSH works using a key file.
+
+12. Important notes  
+    - Test everything from the Jenkins machine.
+    - The production machine must have:
+      - Docker installed
+      - Docker Compose installed
+      - SSH access without password
+
+13. Conclusion  
+    - The production machine is ready.
+    - Secure SSH access is configured.
+    - You can now **deploy applications remotely**.
+
 ### 17. Push: Create your own Docker Hub account
+1. Open Docker Hub  
+   - Go to Google.
+   - Search for **Docker Hub**.
+   - Click on the Docker Hub website.
+
+2. Create a Docker Hub account  
+   - Click on **Sign Up**.
+   - Choose a username (ID).
+   - Enter an email address.
+   - Create a password.
+   - Accept the terms.
+   - Confirm you are not a robot.
+   - Click **Sign Up**.
+
+3. Verify your email  
+   - Docker Hub sends a verification email.
+   - Open your email inbox.
+   - Click the verification link.
+   - Wait for the page to reload.
+
+4. Sign in to Docker Hub  
+   - Go back to Docker Hub.
+   - Click **Sign In**.
+   - Enter your username and password.
+
+5. Access your Docker Hub account  
+   - You are now logged in.
+   - You can create repositories.
+   - These repositories store your Docker images.
+
+6. Conclusion  
+   - Your Docker Hub account is ready.
+   - You can now push and store Docker images.
+
 ### 18. Push: Create a Repository in Docker Hub
+1. Log in to Docker Hub  
+   - Use your Docker Hub account.
+
+2. Create a new repository  
+   - Click on **Create Repository**.
+
+3. Choose the repository owner  
+   - Select your user account.
+
+4. Set repository visibility  
+   - Choose **Public** (anyone can see it) or **Private**.
+   - For this example, select **Private**.
+
+5. Name the repository  
+   - Enter a name, for example: `maven-project`.
+
+6. Add a description  
+   - Write a short description (optional).
+
+7. Create the repository  
+   - Click **Create**.
+
+8. Repository ready  
+   - The repository is now created.
+   - You can start pushing Docker images to it.
+
+9. Conclusion  
+   - Creating a Docker Hub repository is quick and simple.
+![Image](images/section_15_6.png)
+
 ### 19. Push: Learn how to Push/Pull Docker images to your Repository
+1. Open the terminal
+   - Use the terminal where Docker is installed.
+
+2. Log in to Docker Hub  
+   - Run the command: `docker login`
+   - Enter your Docker Hub username.
+   - Enter your password.
+   - You should see: **login succeeded**.
+
+3. Check local Docker images  
+   - Run: `docker images`
+   - Find the image you want to push.
+
+4. Tag the image  
+   - Use `docker tag` to rename the image.
+   - Format:
+     - `docker tag IMAGE_NAME USERNAME/REPOSITORY:TAG`
+   - Example:
+     - Tag the image as `maven-project:2`.
+
+5. Verify the new tag  
+   - Run: `docker images`
+   - You will see the same image with a new name and tag.
+
+6. Push the image to Docker Hub  
+   - Run:
+     - `docker push USERNAME/REPOSITORY:TAG`
+   - Docker uploads the image to your repository.
+
+7. Confirm the image in Docker Hub  
+   - Refresh your Docker Hub repository page.
+   - The image with the new tag is visible.
+
+8. Pull an image from Docker Hub  
+   - Copy the repository name.
+   - Run:
+     - `docker pull USERNAME/REPOSITORY:TAG`
+   - Docker downloads the image.
+
+9. Conclusion  
+   - You can now log in to Docker Hub.
+   - You know how to tag images.
+   - You can push and pull Docker images easily.
+
+
 ### 20. Push: Write a bash script to automate the push process
+1. Go to the pipeline folder  
+   - Path: `jenkins-data/pipeline`.
+
+2. Create a new directory  
+   - Inside the `jenkins` folder, create a folder called `push`.
+
+3. Update the build image name  
+   - Go to the Jenkins build configuration.
+   - In `docker-compose-build`, change the image name.
+   - Use `maven-project` instead of `app`.
+
+4. Create a push script  
+   - Go to the `push` directory.
+   - Create a file called `push.sh`.
+
+5. Start the bash script  
+   - Add `#!/bin/bash` at the top.
+   - Add `echo` messages like “pushing image”.
+
+6. Create variables  
+   - Create a variable called `IMAGE`.
+   - Set it to `maven-project`.
+
+7. Log in to Docker Hub  
+   - Use `docker login`.
+   - Pass username with `-u`.
+   - Pass password using an environment variable `PASS`.
+   - Do not hard-code the password.
+
+8. Tag the Docker image  
+   - Use `docker tag`.
+   - Use the image name and `BUILD_TAG`.
+   - Jenkins provides the `BUILD_TAG` value.
+
+9. Push the image  
+   - Use `docker push`.
+   - Push the tagged image to Docker Hub.
+
+10. Make the script executable  
+    - Give execute permissions to `push.sh`.
+
+11. Test the script  
+    - Export required variables:
+      - `PASS` (Docker Hub password)
+      - `BUILD_TAG` (any test value)
+    - Run the script.
+
+12. Fix missing image error  
+    - If the image does not exist, tag an existing image.
+    - Example: tag `app:2` as `maven-project`.
+
+13. Verify the push  
+    - Refresh your Docker Hub repository.
+    - The new image and tag appear.
+
+14. Conclusion  
+    - The script works correctly.
+    - You can now automate Docker image pushes.
+    - Jenkins can use this script to push images automatically.
+
+```groovy
+#!/bin/bash
+
+echo "********************"
+echo "** Pushing image ***"
+echo "********************"
+
+IMAGE="maven-project"
+
+echo "** Logging in ***"
+docker login -u ricardoandre97 -p $PASS
+echo "*** Tagging image ***"
+docker tag $IMAGE:$BUILD_TAG ricardoandre97/$IMAGE:$BUILD_TAG
+echo "*** Pushing image ***"
+docker push ricardoandre97/$IMAGE:$BUILD_TAG
+```
 ### 21. Push: Add your push script to Jenkinsfile
+1. Locate the Jenkinsfile  
+   - Go to the folder where the `Jenkinsfile` is located.
+
+2. Identify the push script path  
+   - The full path is:
+     - `jenkins/push/push.sh`
+   - This script pushes the Docker image to Docker Hub.
+
+3. Test the script path  
+   - Running this path executes the push script.
+   - The image is pushed to the Docker Hub repository.
+
+4. Edit the Jenkinsfile  
+   - Open the `Jenkinsfile`.
+   - Find the **push** stage.
+
+5. Call the push script  
+   - Inside the push stage, add a command to run:
+     - `jenkins/push/push.sh`
+
+6. Review the pipeline flow  
+   - **Build stage**:
+     - Build the JAR file.
+     - Create the Docker image.
+   - **Test stage**:
+     - Run tests on the code.
+   - **Push stage**:
+     - Push the Docker image to Docker Hub.
+     - Use build tags and environment variables.
+
+7. Pipeline ready  
+   - The Jenkins pipeline is now complete.
+   - Images are built, tested, and pushed automatically.
+
+8. Conclusion  
+   - The push process is fully automated.
+   - Jenkins handles the entire workflow.
+
 ### 22. Deploy: Transfer some variables to the remote machine
+1. Understand the goal  
+   - You need to deploy the application to a remote machine.
+   - You must transfer important variables:
+     - Image name
+     - Build tag
+     - Docker registry password
+
+2. Note about real environments  
+   - Cloud platforms like AWS or GCP manage variables automatically.
+   - This example uses **SSH** for simplicity.
+
+3. Create a deploy folder  
+   - Go to: `jenkins-data/pipeline/jenkins`
+   - Create a new folder called `deploy`.
+
+4. Create a deploy script  
+   - Inside the `deploy` folder, create a file:
+     - `deploy.sh`
+   - Start the script with:
+     - `#!/bin/bash`
+
+5. Store the image name  
+   - The image name is `maven-project`.
+   - Use `echo` to write it into a file:
+     - `/tmp/auth`
+
+6. Store the build tag  
+   - Jenkins generates a build tag every run.
+   - Export `BUILD_TAG` (example: `12`).
+   - Append the build tag to `/tmp/auth`.
+
+7. Store the registry password  
+   - Export a test password (example: `12345678`).
+   - Append it to `/tmp/auth`.
+
+8. Test the deploy script  
+   - Run the script.
+   - Use `cat /tmp/auth`.
+   - The file contains:
+     - Image name
+     - Build tag
+     - Password
+
+9. Purpose of the file  
+   - This file has all data needed for deployment.
+   - It will be sent to the remote machine.
+
+10. Transfer the file using SCP  
+    - Use `scp` with the SSH key.
+    - Example:
+      - `scp -i prod /tmp/auth prod-user@IP:/tmp/auth`
+    - The file is copied to the remote machine.
+
+11. Verify the transfer  
+    - Connect using SSH with the key.
+    - Check the file:
+      - `cat /tmp/auth`
+    - The content is correct.
+
+12. Update the deploy script  
+    - Add the `scp` command to `deploy.sh`.
+    - Use the full path of the SSH key.
+
+13. Store the SSH key safely  
+    - Copy the key to `/opt/prod`.
+    - Use this path in the script.
+
+14. Fix permission issues  
+    - Give execute permissions to `deploy.sh`.
+    - If needed, change file ownership using `chown`.
+
+15. Final result  
+    - The script generates a file with variables.
+    - The file is transferred to the remote machine.
+    - The remote machine is ready for deployment.
+
+16. Conclusion  
+    - You learned how to transfer deployment data.
+    - This method works without cloud services.
+    - The deployment process is now prepared.
+
 ### 23. Deploy: Deploy your application on the remote machine manually
+1. Build the Docker image  
+   - Go to: `jenkins-data/pipeline/jenkins/build`.
+   - Export a build tag (example):
+     - `export BUILD_TAG=10`
+   - Run the build script from the correct level.
+   - The Docker image is created.
+
+2. Verify the image  
+   - Run: `docker images`
+   - Check that `maven-project:10` exists.
+
+3. Push the image to Docker Hub  
+   - Run the push script:
+     - `jenkins/push/push.sh`
+   - The image with tag `10` is pushed.
+
+4. Confirm the image in Docker Hub  
+   - Refresh the Docker Hub repository.
+   - The image with tag `10` is visible.
+
+5. Transfer deployment variables  
+   - Go to: `jenkins-data/pipeline/jenkins/deploy`.
+   - Run the deploy script.
+   - The file with image name, tag, and password is sent to the remote machine.
+
+6. Connect to the remote machine  
+   - Use SSH to log in to the production machine.
+   - This is where the container will run.
+
+7. Check transferred data  
+   - View `/tmp/auth`.
+   - It contains:
+     - Image name
+     - Build tag
+     - Registry password
+
+8. Create a deployment folder  
+   - Create a new folder (example: `maven`).
+   - Go into that folder.
+
+9. Create a Docker Compose file  
+   - Create `docker-compose.yml`.
+   - Use version `3`.
+   - Define one service.
+   - Set:
+     - Image using variables (user/image:tag)
+     - Container name (example: `maven-app`)
+
+10. Export environment variables  
+    - Read values from `/tmp/auth`.
+    - Use `sed` to get:
+      - Line 1 → image name
+      - Line 2 → tag
+      - Line 3 → password
+    - Export variables:
+      - `IMAGE`
+      - `TAG`
+      - `PASS`
+
+11. Log in to Docker Hub  
+    - Use `docker login`.
+    - Pass username and password variable.
+    - Login is successful.
+
+12. Deploy with Docker Compose  
+    - Run:
+      - `docker-compose up -d`
+    - Docker downloads the image if not local.
+    - A container is created.
+
+13. Verify the container  
+    - Run: `docker logs CONTAINER_NAME`
+    - The application works correctly.
+
+14. Result  
+    - The image was pulled from Docker Hub.
+    - The container is running on the remote machine.
+
+15. Conclusion  
+    - This is the manual deployment process.
+    - It uses Docker Hub and Docker Compose.
+    - Next step is full automation.
+
 ### 24. Deploy: Transfer the deployment script to the remote machine
+1. Connect to the remote machine  
+   - You are logged in using SSH.
+   - The Docker Compose file already exists on this machine.
+
+2. Create a deployment script  
+   - Create a script (example: `publish.sh`).
+   - Start it with:
+     - `#!/bin/bash`
+
+3. Read deployment variables  
+   - Read values from the transferred file.
+   - Capture three variables:
+     - Image name
+     - Image tag
+     - Registry password
+
+4. Export variables  
+   - Export the image variable.
+   - Export the tag variable.
+   - Export the password variable.
+   - These match the variables used in `docker-compose.yml`.
+
+5. Log in to Docker Hub  
+   - Use `docker login`.
+   - Pass the username.
+   - Use the password variable.
+
+6. Go to the application folder  
+   - Change directory to the folder with Docker Compose.
+   - Example: `cd maven`
+
+7. Deploy the container  
+   - Run:
+     - `docker-compose up -d`
+   - Docker downloads the image if needed.
+   - The container is started automatically.
+
+8. Test the script  
+   - Give execute permissions.
+   - Run the script.
+   - Fix any small errors (typos).
+   - Confirm successful login and deployment.
+
+9. Decide where to store the script  
+   - Option 1: Keep the script on the remote machine.
+   - Option 2: Transfer the script on every deployment.
+
+10. Copy the script to Jenkins  
+    - Exit the remote machine.
+    - Go to:
+      - `jenkins-data/pipeline/jenkins/deploy`
+    - Create the same `publish.sh` file.
+    - Paste the same content.
+    - Make it executable.
+
+11. Transfer the script automatically  
+    - Modify the deploy script.
+    - Use `scp` to send `publish.sh` to the remote machine.
+    - Use the SSH key from `/opt/prod`.
+
+12. Execute the deploy process  
+    - Run:
+      - `jenkins/deploy/deploy.sh`
+    - This script:
+      - Creates the variables file
+      - Transfers the variables file
+      - Transfers the publish script
+
+13. Result  
+    - Deployment is now automated.
+    - The remote machine has everything needed to deploy.
+
+14. Conclusion  
+    - You automated the manual deployment steps.
+    - Jenkins can now deploy containers automatically.
+
 ### 25. Deploy: Execute the deploy script in the remote machine
+1. Understand the goal  
+   - Jenkins already transfers two files:
+     - The `auth` file (variables)
+     - The `publish` script (deployment logic)
+   - The remote machine needs these files to start the container.
+
+2. Use SSH to execute commands remotely  
+   - Jenkins can run commands on a remote machine using SSH.
+   - This is a simple deployment method.
+
+3. SSH command structure  
+   - Use:
+     - `ssh -i KEY user@remote-machine command`
+   - This allows you to run one command on the remote machine.
+
+4. Execute the publish script  
+   - Jenkins connects to the remote machine using SSH.
+   - It executes the `publish` script that was transferred.
+   - This script deploys the application.
+
+5. Update the deploy script  
+   - Add the SSH command to `deploy.sh`.
+   - The command runs the publish script remotely.
+
+6. Run the deploy process  
+   - Execute `deploy.sh`.
+   - Jenkins:
+     - Transfers the auth file
+     - Transfers the publish script
+     - Executes the publish script via SSH
+
+7. Result  
+   - The remote machine deploys the application.
+   - No manual steps are needed.
+
+8. Conclusion  
+   - Deployment is fully automated.
+   - Jenkins controls the entire process.
+   - This approach helps you design real deployment workflows.
+
 ### 26. Deploy: Add your deploy script to Jenkinsfile
 ### 27. Create a Git Repository to store your scripts and the code for the app
 ### 28. Create the Jenkins Pipeline. Finally!
